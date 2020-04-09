@@ -2,16 +2,31 @@
 Zavlažování skleníku - doplňování sudu; sledování teploty, vlhkosti vzuchu a půdy
 
 Popis projektu:
-Návrh zavlažovacího systému skleníku v Markoušovicích.
-Projekt je rozdělen na dvě části:
+Návrh zavlažovacího systému skleníku.
+Na skleníku je 
+
+Projekt je rozdělen na dvě části - dvě ovládací jednotky - Skleník/Čerpadlo:
 1) Skleník - řídící jednotka (sběrnice dat a vysílač)
+  Obsahuje:
+    a) Arduino Nano - řídící jednotka
+    b) Zdroj 5V - Solární panel, stabilizátor napětí + baterie (na pin Uin) - tak daleko od baráku totiž elektriku nemam
+    c) Vysílač 433Mhz (Pin 12)- pro vysílání stavu sudu a pokynů z tlačítka
+    d) Horní plovákový senzor (Pin 3) - detekce naplnění sudu (ochrana proti přetečení)
+    e) Spodní plovákový senzor (Pin 4) - detekce prázdného sudu
+    f) Tlačítko (Pin 2)- pro okamžité spuštění čerpadla (například v případě dolévání z konve) - čerpadlo nemůže sepnout, pokud horní plovákový senzor detekuje naplněný sud
+    
+   Později - (rozuměj "Nice to have" ale asi je vypustim bo neni času p***) Nutný přechod na Arduino Mega??:
+    f) Display - zobrazování aktuálních hodnot senzorů níže
+    g) Teplotní senzor - venkovní (sleduje teplotu mimo skledník)
+    h) Teplotní senzor - vnitřní (sleduje teplotu uvnitř skleníku)
+    i) Vlhkoměr vzduchu - vnitřní (sleduje vlhkost uvnitř skleníku)
+    j) 3x půdní vlhkoměr
+    k) Teplotní senzor - Sleduje teplotu v krabici ovládací jednotky - stříbrná páaska po obvodu asi postačí
+    l) Větráček - odvětrávání v případě vyšších teplot uvnitř krabice ovládací jednotky
+    
 2) Čerpadlo - přijímač (přijímač, spínání napájení čerpadla)
+  a) Arduino Nano - čtení siggnálu ze Skleníku a ovládání relé 
+  b) Přijímač 433Mhz (Pin 11)- pro příjem signálu ze skleníku
+  c) Relé (Pin D2) - spíná čerpadlo
+  
 
-Hlavní funkce:
-1) Zavlažování skleníku samospádem kapkovými vývody
-2) Doplňování sudu z nádrže rádiovým řízením na cca 30 metrů (Skleník→Čerpadlo); pomocí modulu 433MHz [dosah radiového modulu 20-200m]
-
-Podružné funkce:
-1) Sledování teploty uvnitř skleníku
-2) Sledování vlhkosti vzduchu uvnitř skleníku
-3) Sledování vlhkosti půdy - sběrná místa na začátku, uprostřed a na konci okruhu
