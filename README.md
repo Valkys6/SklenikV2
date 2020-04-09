@@ -1,5 +1,5 @@
 # Sklenik
-Zavlažování skleníku - doplňování sudu; sledování teploty, vlhkosti vzuchu a půdy
+Zavlažování skleníku - doplňování sudu z barelu
 
 Popis projektu:
 Návrh zavlažovacího systému skleníku.
