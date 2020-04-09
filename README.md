@@ -3,7 +3,7 @@ Zavlažování skleníku - doplňování sudu; sledování teploty, vlhkosti vzu
 
 Popis projektu:
 Návrh zavlažovacího systému skleníku.
-Na skleníku je 
+U skleníku je sud a ten je doplňován z barelu
 
 Projekt je rozdělen na dvě části - dvě ovládací jednotky - Skleník/Čerpadlo:
 1) Skleník - řídící jednotka (sběrnice dat a vysílač)
