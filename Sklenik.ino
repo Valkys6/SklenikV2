@@ -1,6 +1,6 @@
 /* Skleník:
  *  Vyšli zprávu každé 2 sekundy
- *  "Relay_ON!"při podmínce tlačítko + horní plovák v pozici HIGH
+ *  "Relay_ON!" při podmínce tlačítko + horní plovák v pozici HIGH
  *  "Relay_ON!" při podmínce spodní plovák v pozici LOW
  *  "Relay_OF!" pokud není některá z podmínek splněna
  *  Po příjmu jakékoli zprávy rozsvítí integrovanou LED
