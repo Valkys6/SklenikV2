@@ -58,10 +58,11 @@ void loop() {
   }
   //casovadlo
   delay(1000);                    //a cekame vterinu, takze cela smyce (fukci loop vola "system" furt dokola jak debil) pojede 1x za vterinu, takze i casovadlo bude ve vterinach      
-  digitalWrite(LED_BUILTIN, LOW); //zhasneme ledku
-  if (reltim!=0) {                //pokud casovadlo jede, budeme casovat
-    if ((--reltim)==0) {          //cukneme a pokud to prave dojelo, 
-      relay(0);                   //a vypnem relatko        
-    }
-  }    
+  //potrebujeme to i zde?
+  //digitalWrite(LED_BUILTIN, LOW); //zhasneme ledku
+  //if (reltim!=0) {                //pokud casovadlo jede, budeme casovat
+  //  if ((--reltim)==0) {          //cukneme a pokud to prave dojelo, 
+  //    relay(0);                   //a vypnem relatko        
+    //}
+  //}    
 }
