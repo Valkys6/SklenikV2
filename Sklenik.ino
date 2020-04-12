@@ -9,7 +9,7 @@
 // Použíté knihovny:
 #include <RH_ASK.h>               //Knihovna ovladace radia
 #include <SPI.h>                  //Not actually used but needed to compile
-#include <RTClib.h>               //Knihovna ovaldace RTC (V originalu je teda "RTClib.h", ale snad to nebude vadit)
+#include <RTClib.h>               //Knihovna ovladace RTC (V originalu je teda "RTClib.h", ale snad to nebude vadit)
 
 #define PIN_BUTTON1  2            //Pozice pro tlacitko 1 - zapni relé
 #define PIN_PLOV1  3              //Pozice pro horni plovakova senzor
