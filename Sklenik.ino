@@ -16,9 +16,9 @@
 #define PIN_PLOV2  4              //Pozice pro dolni plovakova senzor
 
 // variables will change:
-int buttonState = 0;         // variable for reading the pushbutton status
-int plov1State = 0;            // proměnná pro výchozí stav horního plovákového senzoru
-int plov2State = 0;            // proměnná pro výchozí stav spodního plovákového senzoru
+int buttonState = 0;              // variable for reading the pushbutton status
+int plov1State = 0;               // proměnná pro výchozí stav horního plovákového senzoru
+int plov2State = 0;               // proměnná pro výchozí stav spodního plovákového senzoru
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
 RH_ASK driver;                    //Objekt ovladace radia
