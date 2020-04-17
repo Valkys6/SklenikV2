@@ -57,7 +57,7 @@ void loop() {
     }
   }
 
-  else if ((digitalRead(PIN_PLOV2) == LOW) && (digitalRead(PIN_PLOV1) == HIGH) {  // Pokud je sepnuto tlacitko pod podminko
+  else if ((digitalRead(PIN_PLOV2) == LOW) && (digitalRead(PIN_PLOV1) == HIGH)) {  // Pokud je sepnuto tlacitko pod podminko
     while (digitalRead(PIN_PLOV1) == HIGH) {
       RTC(1);                     // Ukaz na seriovym portu stav na RTC modulu
       RadioMessage(1);            // Ukaz zpravu na seriovym portu, ze chceme zapnout relatko (cerpadlo)
@@ -67,8 +67,8 @@ void loop() {
 
   else {
     RTC(1);
-    RadioMessage(0);            // Ukaz zpravu na seriovym portu, ze chceme vypnout relatko (cerpadlo)
-    send_msg("Relay_OF!");      // Volam funkci odeslani retezce
+    RadioMessage(0);              // Ukaz zpravu na seriovym portu, ze chceme vypnout relatko (cerpadlo)
+    send_msg("Relay_OF!");        // Volam funkci odeslani retezce
   }
 }
 
