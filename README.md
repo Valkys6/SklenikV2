@@ -6,7 +6,7 @@ Popis projektu:
 Návrh zavlažovacího systému skleníku.
 
 U skleníku je sud ze kterého je přiváděna voda samospádem 8mm trubičkami do kapkových vývodů rozmístěných ve skleníku.
-Pokud dochází voda v sudu, radiovým signálem se vyšle povel k sepnutí čerpadla umístěného v 1000 l nádrži. Nádrž je zhruba 40m od sudu a o zhruba 5m níže, než je vtok do sudu.
+Pokud dochází voda v sudu, radiovým signálem se vyšle povel k sepnutí čerpadla umístěného v 1000 l nádrži. Nádrž je zhruba 40m od sudu a o cca o 5m níže, než je vtok do sudu.
 
 Projekt je rozdělen na dvě části - dvě ovládací jednotky - Skleník/Čerpadlo:
 
