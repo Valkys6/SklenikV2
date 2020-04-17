@@ -9,8 +9,8 @@
  
 // Pouzite knihovny:
 #include <RH_ASK.h>               // Knihovna ovladace radia
-#include <SPI.h>                  // Not actually used but needed to compile
-#include <RTClib.h>               // Knihovna ovladace RTC (V originalu je teda "RTClib.h", ale snad to nebude vadit)
+#include <SPI.h>                  // Neni zde pouzito, ale je potreba kompilovat// Nativni knihovna pro praci se sbernici I2C
+#include <RTClib.h>               // Knihovna ovladace RTC
 
 // Definice pozic vstupu ()
 #define PIN_BUTTON1  2            // Pozice pro tlacitko 1 - zapni relé
@@ -20,6 +20,7 @@
 // Pouzite ovladace periferii
 RH_ASK driver;                    // Objekt ovladace radia
 RTC_DS3231 rtc;                   // Objekt ovladace RTC
+uint8_t reltim;                   // Casovadlo, pozor, umi to max 255 vterin (max 0xFF)
 
 void setup() {
   // Pripravime si seriak, abychom tam mohli zvracet moudra, které zvracíme po rádiu
@@ -76,36 +77,36 @@ void loop() {
 
 void RTC(uint8_t mode) {
   if (mode==1) {
-    DateTime time = rtc.now();    //Optej se jaky mame cas
-    Serial.print(String("GMT:")+time.timestamp(DateTime::TIMESTAMP_FULL));  //Ukaz GMT cas
+    DateTime time = rtc.now();    // Optej se jaky mame cas
+    Serial.print(String("GMT:")+time.timestamp(DateTime::TIMESTAMP_FULL));  // Ukaz GMT cas
+    Serial.println();             // Ukonci radek
+    Serial.print("Hour: ");       // Ukaz retezec s popisem, ze chceme ukazat hodinu
+    Serial.print(time.hour(), DEC); // Jakou mame hodinu
     Serial.println();             //Ukonci radek
-    Serial.print("Hour: ");       //Ukaz retezec s popisem, ze chceme ukazat hodinu
-    Serial.print(time.hour(), DEC);  //Jakou mame hodinu
-    Serial.println();             //Ukonci radek
-    Serial.print("RTCTemp: ");    //Ukaz retezec s popisem, ze chceme ukazat teplotu
-    Serial.print(rtc.getTemperature());  //Jakou mame teplotu
-    Serial.println(" C");         //At ma pan Celsius radost a ukonci radek
+    Serial.print("RTCTemp: ");    // Ukaz retezec s popisem, ze chceme ukazat teplotu
+    Serial.print(rtc.getTemperature());  // Jakou mame teplotu
+    Serial.println(" C");         // At ma pan Celsius radost a ukonci radek
   }
 }
 
-void RadioMessage(uint8_t mode) {        //Funkce pro odeslani retezce na seriovy port - kontrola co to vlastne odesilame
+void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port - kontrola co to vlastne odesilame
   if (mode==0) {                  //Prejem si vypnout 
-    Serial.println(F("Relay OFF"));  // Ukaz na seriovem portu "Relay OFF"
-    Serial.println();             // přidej mezeru mezi zpravami
-    digitalWrite(LED_BUILTIN, HIGH);   // Rozsvitime ledku, bo odesla zprava
-    delay(50);                    //Počkej 50ms
-    digitalWrite(LED_BUILTIN, LOW);   //rozsvitime ledku, bo odesla zprava
-    delay(50);                    //Počkej 50ms
-  } else {                        //Prejem si zapnout 
-    Serial.println(F("Relay ON"));  //tak ukaz na seriovem portu "Relay ON"
-    Serial.println();             // přidej mezeru mezi zpravami
-    digitalWrite(LED_BUILTIN, HIGH);   //rozsvitime ledku, bo odesla zprava
-    delay(50);                    //Počkej 50ms
-    digitalWrite(LED_BUILTIN, LOW);   //rozsvitime ledku, bo odesla zprava
-    delay(50);                    //Počkej 50ms
-    digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku, bo odesla zprava
-    delay(50);                    //Počkej 50ms
-    digitalWrite(LED_BUILTIN, LOW);   //rozsvitime ledku, bo odesla zprava
+    Serial.println(F("Relay OFF")); // Ukaz na seriovem portu "Relay OFF"
+    Serial.println();             // Pridej mezeru za touto zpravou
+    digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku, ze odesla zprava
+    delay(50);                    // Počkej 50ms
+    digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
+    delay(50);                    // Počkej 50ms
+  } else {                        // Prejem si zapnout 
+    Serial.println(F("Relay ON"));  // Tak ukaz na seriovem portu "Relay ON"
+    Serial.println();             // Přidej mezeru mezi zpravami
+    digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku, ze odesla zprava "Relay ON"
+    delay(50);                    // Počkej 50ms
+    digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
+    delay(50);                    // Počkej 50ms
+    digitalWrite(LED_BUILTIN, HIGH);  // Jeste jednou rozsvitime, ze odesla zprava "Relay ON"
+    delay(50);                    // Počkej 50ms
+    digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
     delay(50);                    //Počkej 50ms
   }
 }
