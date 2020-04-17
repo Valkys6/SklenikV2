@@ -8,7 +8,7 @@ U skleníku je sud a ten je doplňován z barelu
 Projekt je rozdělen na dvě části - dvě ovládací jednotky - Skleník/Čerpadlo:
 1) Skleník - řídící jednotka (sběrnice dat a vysílač)
   Obsahuje:
-    a) Arduino Nano - řídící jednotka
+  a) Arduino Nano - řídící jednotka
     b) Zdroj 5V - Solární panel, stabilizátor napětí + baterie (na pin Uin) - tak daleko od baráku totiž elektriku nemam
     c) Vysílač 433Mhz (Pin 12)- pro vysílání stavu sudu a pokynů z tlačítka
     d) Horní plovákový senzor (Pin 3) - detekce naplnění sudu (ochrana proti přetečení)
