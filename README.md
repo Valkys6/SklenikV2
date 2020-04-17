@@ -2,12 +2,12 @@
 Zavlažování skleníku pomocí dvou modulů Arduino Nano
 
 Popis projektu:
-```
+
 Návrh zavlažovacího systému skleníku.
 
 U skleníku je sud ze kterého je přiváděna voda samospádem 8mm trubičkami do kapkových vývodů rozmístěných ve skleníku.
 Pokud dochází voda v sudu, radiovým signálem se vyšle povel k sepnutí čerpadla umístěného v 1000 l nádrži. Nádrž je zhruba 40m od sudu a o cca o 5m níže, než je vtok do sudu. Mezi sudem a nádrží je natažena obyčejná, v zemi zakopaná zahradní hadice.
-```
+
 Projekt je rozdělen na dvě části - dvě ovládací jednotky - Skleník/Čerpadlo:
 
 ## 1. Skleník - řídící jednotka (sběrnice dat a vysílač) obsahuje:
@@ -29,7 +29,7 @@ Projekt je rozdělen na dvě části - dvě ovládací jednotky - Skleník/Čerp
         - Větráček - odvětrávání v případě vyšších teplot uvnitř krabice ovládací jednotky
     
 ## 2) Čerpadlo - přijímač (přijímač, spínání napájení čerpadla)
-    - Arduino Nano - čtení siggnálu ze Skleníku a ovládání relé
+    - Arduino Nano - zpracování signálu ze Skleníku a ovládání relé
     - Trafo zdroj 230V / 5V
     - Přijímač 433Mhz (Pin 11) se spirálovou anténou pro příjem signálu ze skleníku
     - Relé (Pin D2) - spíná čerpadlo
