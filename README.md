@@ -34,5 +34,4 @@ Projekt je rozdělen na dvě části - dvě ovládací jednotky - Skleník/Čerp
     - Přijímač 433Mhz (Pin 11) se spirálovou anténou pro příjem signálu ze skleníku
     - Relé (Pin D2) - spíná čerpadlo
     - Přívodní kabel 230V na relé 
-    - Čerpadlo se zabudovaným plovákovým senzorem (zatím nespecifikováno
-
+    - Čerpadlo se zabudovaným plovákovým senzorem (zatím nespecifikováno)
