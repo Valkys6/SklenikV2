@@ -1,7 +1,7 @@
 # Sklenik
 Zavlažování skleníku pomocí dvou modulů Arduino Nano
 
-Popis projektu:
+Popis projektu
 Návrh zavlažovacího systému skleníku.
 U skleníku je sud (cca 30m od domu) a ten je doplňován z 1000l nádrže s dešťovou vodou.
 
