@@ -1,7 +1,7 @@
 /* Sklenik:
  *  Vysli zpravu kazde 2 sekundy
  *  "Relay_ON!" pri podmince tlacitko + horni plovak v pozici HIGH a drž, to dokud není Horní plovák v pozici LOW
- *  "Relay_ON!" pri podmince spodni plovak v pozici LOW + GMT cas je mezi 20:00 a 5:00 (-2 hodiny letniho casu) 
+ *  "Relay_ON!" pri podmince spodni plovak v pozici LOW + GMT cas je mezi 5:00 a 19:00  (-2 hodiny letniho casu) 
  *  "Relay_OF!" pokud neni neni zadna z predchozich podminek splnena
  *  Serial port ukaze co to odesilame a pomoci RTC modulu DS3231 ukaze cas a stav teploty v krabici ridici jednotky skleniku
  *  Po vyslani jakekoli zpravy rozsviti integrovanou LEDku
@@ -23,42 +23,44 @@ RTC_DS3231 rtc;                   // Objekt ovladace RTC
 
 void setup() {
   // Pripravime si seriak, abychom tam mohli zvracet moudra, které zvracíme po rádiu
-  Serial.begin(9600);           // Debugging only
+  Serial.begin(9600);             // Debugging only
   Serial.println(F("Valkys super RF Sklenik driver v1.0\n=================================\n"));  // Ukaz pri inicializici
 
   // Nastav vystupy a vstupy
-  pinMode(LED_BUILTIN, OUTPUT); // Inicializace LED_BUILDIN jako výstup
-  pinMode(PIN_BUTTON1, INPUT);  // Inicilazace tlacitka jako vstup
-  pinMode(PIN_PLOV1, INPUT);    // Inicializace horniho plovakoveho senzoru - PIN_PLOV1
-  pinMode(PIN_PLOV2, INPUT);    // Inicializace spodniho plovakoveho senzoru - PIN_PLOV2
-  RadioMessage(0);              // Defaultne posilame pokyn k vypnuti rele
+  pinMode(LED_BUILTIN, OUTPUT);   // Inicializace LED_BUILDIN jako výstup
+  pinMode(PIN_BUTTON1, INPUT);    // Inicilazace tlacitka jako vstup
+  pinMode(PIN_PLOV1, INPUT);      // Inicializace horniho plovakoveho senzoru - PIN_PLOV1
+  pinMode(PIN_PLOV2, INPUT);      // Inicializace spodniho plovakoveho senzoru - PIN_PLOV2
+  RadioMessage(0);                // Defaultne posilame pokyn k vypnuti rele
 
   // Ukaz pokud nedostanes zpravu z periferii
   if (!driver.init()) Serial.println("init failed");  // Nastavení komunikace radioveho vysilace - pin 12 (urceno knihovnou)
-  if (! rtc.begin()) {          // Nastaveni komunikace RTC modulu
+  if (!rtc.begin()) {            // Nastaveni komunikace RTC modulu
     Serial.println("Couldn't find RTC");  // Bude drzkovat, kdyz nenajde RTC modul (baterie v modulu by mela vydrzet 8 let) 
-    while (1);                  // Kdyz je RTC modul ziv a zdrav, posila data (absenci slozenych zavorek a tu jednicku nechapu)
+    while (1);                    // Kdyz je RTC modul ziv a zdrav, posila data (absenci slozenych zavorek a tu jednicku nechapu)
   }
 }
 
 void send_msg(const char* msg) {  // Funkce pro odeslani retezce  
   driver.send((uint8_t *)msg, strlen(msg)); // Posli to
-  driver.waitPacketSent();      // Cekej, az to bude cely venku                             
-  delay(2000);                  // Flakej se 2s
+  driver.waitPacketSent();        // Cekej, az to bude cely venku                             
+  delay(2000);                    // Flakej se 2s
 }
 
 void loop() {
   
-  if ((digitalRead(PIN_BUTTON1) == LOW) && (digitalRead(PIN_PLOV1) == HIGH)) {  // Pokud je sepnuto tlacitko pod podminko
-    while (digitalRead(PIN_PLOV1) == HIGH) {  // Nez se naplní sud opakuj tohle
+  DateTime time = rtc.now();      // Optej se jaky mame cas
+  
+  if ((digitalRead(PIN_BUTTON1) == LOW) && (digitalRead(PIN_PLOV1) == HIGH)) {  // Pokud je sepnuto tlacitko a sud neni zcela naplnen tak zacni cerpat
+    while (digitalRead(PIN_PLOV1) == HIGH) {  // Pokud plati ze sud neni naplnen opakuj nasledujici
       RTC(1);                     // Ukaz na seriovym portu stav na RTC modulu
       RadioMessage(1);            // Ukaz zpravu na seriovym portu, ze chceme zapnout relatko (cerpadlo)
       send_msg("Relay_ON!");      // Volam funkci odeslani retezce
     }
   }
 
-  else if ((digitalRead(PIN_PLOV2) == LOW) && (digitalRead(PIN_PLOV1) == HIGH)) {  // Pokud je sepnuto tlacitko pod podminko
-    while (digitalRead(PIN_PLOV1) == HIGH) {
+  else if ((digitalRead(PIN_PLOV2) == LOW) && (digitalRead(PIN_PLOV1) == HIGH) && (time.hour() > 5) && (time.hour() < 19)) {  // Pokud je hladina pod spodnim plovakem, horni plovak neni sepnut (ochrana, proti selhani Plov2) a je mezi 5:00 a 19:00 chceme cerpat
+    while (digitalRead(PIN_PLOV1) == HIGH) { // Pokud plati ze sud neni naplnen opakuj nasledujici
       RTC(1);                     // Ukaz na seriovym portu stav na RTC modulu
       RadioMessage(1);            // Ukaz zpravu na seriovym portu, ze chceme zapnout relatko (cerpadlo)
       send_msg("Relay_ON!");      // Volam funkci odeslani retezce
