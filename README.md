@@ -1,19 +1,20 @@
 # Sklenik
-Zavlažování skleníku - doplňování sudu z barelu
+Zavlažování skleníku pomocí dvou modulů Arduino Nano
 
 Popis projektu:
 Návrh zavlažovacího systému skleníku.
-U skleníku je sud a ten je doplňován z barelu
+U skleníku je sud (cca 30m od domu) a ten je doplňován z 1000l nádrže s dešťovou vodou.
+
 
 Projekt je rozdělen na dvě části - dvě ovládací jednotky - Skleník/Čerpadlo:
 1) Skleník - řídící jednotka (sběrnice dat a vysílač)
-  Obsahuje:
-  a) Arduino Nano - řídící jednotka
-    b) Zdroj 5V - Solární panel, stabilizátor napětí + baterie (na pin Uin) - tak daleko od baráku totiž elektriku nemam
-    c) Vysílač 433Mhz (Pin 12)- pro vysílání stavu sudu a pokynů z tlačítka
-    d) Horní plovákový senzor (Pin 3) - detekce naplnění sudu (ochrana proti přetečení)
-    e) Spodní plovákový senzor (Pin 4) - detekce prázdného sudu
-    f) Tlačítko (Pin 2)- pro okamžité spuštění čerpadla (například v případě dolévání z konve) - čerpadlo nemůže sepnout, pokud horní plovákový senzor detekuje naplněný sud
+Obsahuje:
+a) Arduino Nano - řídící jednotka
+b) Zdroj 5V - Solární panel, stabilizátor napětí + baterie (na pin Uin) - tak daleko od baráku totiž elektriku nemam
+c) Vysílač 433Mhz (Pin 12)- pro vysílání stavu sudu a pokynů z tlačítka
+d) Horní plovákový senzor (Pin 3) - detekce naplnění sudu (ochrana proti přetečení)
+e) Spodní plovákový senzor (Pin 4) - detekce prázdného sudu
+f) Tlačítko (Pin 2)- pro okamžité spuštění čerpadla (například v případě dolévání z konve) - čerpadlo nemůže sepnout, pokud horní plovákový senzor detekuje naplněný sud
     
    Později - (rozuměj "Nice to have" ale asi je vypustim bo neni času p***) Nutný přechod na Arduino Mega??:
     f) Display - zobrazování aktuálních hodnot senzorů níže
