@@ -2,7 +2,7 @@
  *  Po prijmu zpravy "Relay_ON!" sepne rele na cerpadle
  *  Po prijmu zpravy "Relay_OF!" cerpadlo vypne
  *  Po prijmu jakekoli zpravy rozsviti integrovanou LED
- *  V případě, že neprichazi zprava, vypni rele po 20 sekundach
+ *  V pripade, ze neprichazi zprava, vypni rele po 20 sekundach
 */
 
 // Použíté knihovny:
