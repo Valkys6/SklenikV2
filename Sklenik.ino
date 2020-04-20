@@ -56,7 +56,6 @@ void loop() {
     while (digitalRead(PIN_PLOV1) == HIGH) {  // Pokud plati ze sud neni naplnen opakuj nasledujici
       RTC(1);                     // Ukaz na seriovym portu stav na RTC modulu
       RadioMessage(1);            // Ukaz zpravu na seriovym portu, ze chceme zapnout relatko (cerpadlo)
-      send_msg("Relay_ON!");      // Volam funkci odeslani retezce
     }
   }
 
@@ -64,7 +63,6 @@ void loop() {
     while (digitalRead(PIN_PLOV1) == HIGH) { // Pokud plati ze sud neni naplnen opakuj nasledujici
       RTC(1);                     // Ukaz na seriovym portu stav na RTC modulu
       RadioMessage(1);            // Ukaz zpravu na seriovym portu, ze chceme zapnout relatko (cerpadlo)
-      
     }
   }
 
