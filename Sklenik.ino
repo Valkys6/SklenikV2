@@ -4,7 +4,8 @@
  *  "Relay_ON!" pri podmince spodni plovak v pozici LOW + GMT cas je mezi 5:00 a 19:00  (-2 hodiny letniho casu) 
  *  "Relay_OF!" pokud neni neni zadna z predchozich podminek splnena
  *  Serial port ukaze co to odesilame a pomoci RTC modulu DS3231 ukaze cas a stav teploty v krabici ridici jednotky skleniku
- *  Po vyslani jakekoli zpravy rozsviti integrovanou LEDku
+ *  Po vyslani zpravy "Relay_OF!" blikne integrovanou LED 1x
+ *  Po vyslani zpravy "Relay_OF!" blikne integrovanou LED 2x
  */
  
 // Pouzite knihovny:
