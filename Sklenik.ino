@@ -64,14 +64,13 @@ void loop() {
     while (digitalRead(PIN_PLOV1) == HIGH) { // Pokud plati ze sud neni naplnen opakuj nasledujici
       RTC(1);                     // Ukaz na seriovym portu stav na RTC modulu
       RadioMessage(1);            // Ukaz zpravu na seriovym portu, ze chceme zapnout relatko (cerpadlo)
-      send_msg("Relay_ON!");      // Volam funkci odeslani retezce
+      
     }
   }
 
   else {
     RTC(1);
     RadioMessage(0);              // Ukaz zpravu na seriovym portu, ze chceme vypnout relatko (cerpadlo)
-    send_msg("Relay_OF!");        // Volam funkci odeslani retezce
   }
 }
 
@@ -97,6 +96,7 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
     delay(50);                    // Počkej 50ms
     digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
     delay(50);                    // Počkej 50ms
+    send_msg("Relay_OF!");        // Volam funkci odeslani retezce
   } else {                        // Prejem si zapnout 
     Serial.println(F("Relay ON"));  // Tak ukaz na seriovem portu "Relay ON"
     Serial.println();             // Přidej mezeru mezi zpravami
@@ -108,5 +108,6 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
     delay(50);                    // Počkej 50ms
     digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
     delay(50);                    //Počkej 50ms
+    send_msg("Relay_ON!");        // Volam funkci odeslani retezce
   }
 }
