@@ -28,7 +28,7 @@ Projekt je rozdělen na dvě části - dvě ovládací jednotky - Skleník/Čerp
         - Teplotní senzor - Sleduje teplotu v krabici ovládací jednotky - stříbrná páaska po obvodu asi postačí
         - Větráček - odvětrávání v případě vyšších teplot uvnitř krabice ovládací jednotky
     
-## 2) Čerpadlo - přijímač (přijímač, spínání napájení čerpadla)
+## 2. Čerpadlo - přijímač (přijímač, spínání napájení čerpadla)
     - Arduino Nano - zpracování signálu ze Skleníku a ovládání relé
     - Trafo zdroj 230V / 5V
     - Přijímač 433Mhz (Pin 11) se spirálovou anténou pro příjem signálu ze skleníku
