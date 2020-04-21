@@ -1,9 +1,9 @@
 /* Sklenik:
  *  Vysli zpravu kazde 2 sekundy
- *  "Relay_ON!" pri podmince tlacitko + horni plovak v pozici HIGH a drž, to dokud není Horní plovák v pozici LOW
- *  "Relay_ON!" pri podmince spodni plovak v pozici LOW + GMT cas je mezi 5:00 a 19:00  (-2 hodiny letniho casu) 
+ *  "Relay_ON!" pri podmince tlacitko + horni plovak v pozici LOW a drž to, dokud není Horní plovák v pozici HIGH
+ *  "Relay_ON!" pri podmince spodni plovak v pozici HIGH + GMT cas je mezi 5:00 a 19:00  (-2 hodiny letniho casu) 
  *  "Relay_OF!" pokud neni neni zadna z predchozich podminek splnena
- *  Serial port ukaze co to odesilame a pomoci RTC modulu DS3231 ukaze cas a stav teploty v krabici ridici jednotky skleniku
+ *  Serial port ukaze co to odesilame a pomoci RTC modulu DS3231 ukaze cas a stav teploty v krabici ridici jednotky skleniku na seriovem portu
  *  Po vyslani zpravy "Relay_OF!" blikne integrovanou LED 1x
  *  Po vyslani zpravy "Relay_ON!" blikne integrovanou LED 2x
  */
@@ -53,16 +53,16 @@ void loop() {
   
   DateTime time = rtc.now();      // Optej se jaky mame cas
   
-  if ((digitalRead(PIN_BUTTON1) == LOW) && (digitalRead(PIN_PLOV1) == HIGH)) {  // Pokud je sepnuto tlacitko a sud neni zcela naplnen tak zacni cerpat
-    while (digitalRead(PIN_PLOV1) == HIGH) {  // Pokud plati ze sud neni naplnen opakuj nasledujici
+  if ((digitalRead(PIN_BUTTON1) == LOW) && (digitalRead(PIN_PLOV1) == LOW)) {  // Pokud je sepnuto tlacitko a sud neni zcela naplnen tak zacni cerpat
+    while (digitalRead(PIN_PLOV1) == LOW) {  // Pokud plati ze sud neni naplnen opakuj nasledujici
       RTC(1);                     // Ukaz na seriovym portu stav na RTC modulu
       RadioMessage(1);            // Ukaz zpravu na seriovym portu, ze chceme zapnout relatko (cerpadlo)
       send_msg("Relay_ON!");      // Volam funkci odeslani retezce
     }
   }
 
-  else if ((digitalRead(PIN_PLOV2) == LOW) && (digitalRead(PIN_PLOV1) == HIGH) && (time.hour() > 5) && (time.hour() < 19)) {  // Pokud je hladina pod spodnim plovakem, horni plovak neni sepnut (ochrana, proti selhani Plov2) a je mezi 5:00 a 19:00 chceme cerpat
-    while (digitalRead(PIN_PLOV1) == HIGH) { // Pokud plati ze sud neni naplnen opakuj nasledujici
+  else if ((digitalRead(PIN_PLOV2) == LOW) && (digitalRead(PIN_PLOV1) == LOW) && (time.hour() > 5) && (time.hour() < 19)) {  // Pokud je hladina pod spodnim plovakem, horni plovak neni sepnut (ochrana, proti selhani Plov2) a je mezi 5:00 a 19:00 chceme cerpat
+    while (digitalRead(PIN_PLOV1) == LOW) { // Pokud plati ze sud neni naplnen opakuj nasledujici
       RTC(1);                     // Ukaz na seriovym portu stav na RTC modulu
       RadioMessage(1);            // Ukaz zpravu na seriovym portu, ze chceme zapnout relatko (cerpadlo)
       send_msg("Relay_ON!");      // Volam funkci odeslani retezce
