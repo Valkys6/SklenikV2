@@ -1,6 +1,6 @@
 /* Sklenik:
  *  Vysli zpravu kazde 2 sekundy
- *  "Relay_ON!" pri podmince tlacitko + horni plovak v pozici LOW a drz to, dokud neni horni plovak v pozici HIGH
+ *  "Relay_ON!" pri podmince tlacitko v pouici HIGH (updatovat v kodu po osazeni do krabice) + horni plovak v pozici LOW a drz to, dokud neni horni plovak v pozici HIGH
  *  "Relay_ON!" pri podmince spodni i horni plovak v pozici LOW a GMT cas je mezi 5:00 a 19:00  (-2 hodiny letniho casu) a drz to, dokud neni horni plovak v pozici HIGH
  *  "Relay_OF!" pokud neni neni zadna z predchozich podminek splnena
  *  Serial port ukaze co to odesilame a pomoci RTC modulu DS3231 ukaze cas a stav teploty v krabici ridici jednotky skleniku na seriovem portu
@@ -95,19 +95,19 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
     Serial.println(F("Relay OFF")); // Ukaz na seriovem portu "Relay OFF"
     Serial.println();             // Pridej mezeru za touto zpravou
     digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku, ze odesla zprava
-    delay(50);                    // Počkej 50ms
+    delay(50);                    // Pockej 50ms
     digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
-    delay(50);                    // Počkej 50ms
+    delay(50);                    // Pockej 50ms
   } else {                        // Prejem si zapnout 
     Serial.println(F("Relay ON"));  // Tak ukaz na seriovem portu "Relay ON"
-    Serial.println();             // Přidej mezeru mezi zpravami
+    Serial.println();             // Pridej mezeru mezi zpravami
     digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku, ze odesla zprava "Relay ON"
-    delay(50);                    // Počkej 50ms
+    delay(50);                    // Pockej 50ms
     digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
-    delay(50);                    // Počkej 50ms
+    delay(50);                    // Pockej 50ms
     digitalWrite(LED_BUILTIN, HIGH);  // Jeste jednou rozsvitime, ze odesla zprava "Relay ON"
-    delay(50);                    // Počkej 50ms
+    delay(50);                    // Pockej 50ms
     digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
-    delay(50);                    //Počkej 50ms
+    delay(50);                    // Pockej 50ms
   }
 }
