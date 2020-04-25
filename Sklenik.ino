@@ -13,15 +13,22 @@
 #include <SPI.h>                  // Neni zde pouzito, ale je potreba kompilovat// Nativni knihovna pro praci se sbernici I2C
 #include <RTClib.h>               // Knihovna ovladace RTC
 
-// Definice pozic vstupu ()
+// Definice pozic vstupu:
 #define PIN_BUTTON1  2            // Pozice pro tlacitko 1 - zapni relé
 #define PIN_PLOV1  3              // Pozice pro horni plovakova senzor
 #define PIN_PLOV2  4              // Pozice pro dolni plovakova senzor
 
-// Pouzite ovladace periferii
+// Pouzite ovladace periferii:
 RH_ASK driver;                    // Objekt ovladace radia
 RTC_DS3231 rtc;                   // Objekt ovladace RTC
 uint8_t reltim;                   // Casovadlo, pozor, umi to max 255 vterin (max 0xFF)
+
+// Jednoducha synchornizace data a casu RTC modulu rucnim zadanim. Pozor, v kodu pocitame s GMT (-2 hodiny naseho letniho casu)
+// Pri prvnim spusteni je treba nastavit cas. Pro vyssi presnost bychom jej mohli nastavit treba rucnim zadanim pres seriovou linku az za behu. Ja naopak natvrdo v kodu vytvorim objekt s casem a ten se pak pri spusteni nahraje do pameti RTC cipu.
+// Postupne: Rok, mesic, den, hodina, minuta, sekunda, den v tydnu (nedele = 0)
+// Abych si hodiny nerozhodil po kazdem zapnuti, je funkce zaremovana: 
+// DateTime time(2020, 04, 18, 15, 0, 0, 6);
+// Neovereno, ale az bude potreba, tak snad bude fungovat
 
 void setup() {
   // Pripravime si seriak, abychom tam mohli zvracet moudra, které zvracíme po rádiu
