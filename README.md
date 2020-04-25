@@ -12,6 +12,7 @@ Projekt je rozdělen na dvě části - dvě ovládací jednotky - Skleník/Čerp
 
 ## 1. Skleník - řídící jednotka (sběrnice dat a vysílač) obsahuje:
     - Arduino Nano - řídící jednotka
+    - RTC modul DS3231 - ovladani pomoci knihovy RH_ASK.h; pro synchronizaci RTC je vyuzita knihovna wire.h, na kterou by bylo dobre prejit (je novejsi) pro cele reseni az bude cas 
     - Zdroj 5V - Solární panel, stabilizátor napětí + baterie (na pin Uin) - tak daleko od baráku totiž elektriku nemam
     - Vysílač 433Mhz (Pin 12) se spirálovou anténou pro vysílání stavu sudu a pokynů z tlačítka
     - Horní plovákový senzor (Pin 3) - detekce naplnění sudu (ochrana proti přetečení)
