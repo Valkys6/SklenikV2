@@ -1,6 +1,6 @@
 /* Sklenik:
  *  Vysli zpravu kazde 2 sekundy
- *  "Relay_ON!" pri podmince tlacitko v pouici HIGH (updatovat v kodu po osazeni do krabice) + horni plovak v pozici LOW a drz to, dokud neni horni plovak v pozici HIGH
+ *  "Relay_ON!" pri podmince tlacitko v pozici HIGH (updatovat po zapojeni do krabice) + horni plovak v pozici LOW a drz to, dokud neni horni plovak v pozici HIGH
  *  "Relay_ON!" pri podmince spodni i horni plovak v pozici LOW a GMT cas je mezi 5:00 a 19:00  (-2 hodiny letniho casu) a drz to, dokud neni horni plovak v pozici HIGH
  *  "Relay_OF!" pokud neni neni zadna z predchozich podminek splnena
  *  Serial port ukaze co to odesilame a pomoci RTC modulu DS3231 ukaze cas a stav teploty v krabici ridici jednotky skleniku na seriovem portu
@@ -13,22 +13,15 @@
 #include <SPI.h>                  // Neni zde pouzito, ale je potreba kompilovat// Nativni knihovna pro praci se sbernici I2C
 #include <RTClib.h>               // Knihovna ovladace RTC
 
-// Definice pozic vstupu:
+// Definice pozic vstupu ()
 #define PIN_BUTTON1  2            // Pozice pro tlacitko 1 - zapni relé
 #define PIN_PLOV1  3              // Pozice pro horni plovakova senzor
 #define PIN_PLOV2  4              // Pozice pro dolni plovakova senzor
 
-// Pouzite ovladace periferii:
+// Pouzite ovladace periferii
 RH_ASK driver;                    // Objekt ovladace radia
 RTC_DS3231 rtc;                   // Objekt ovladace RTC
 uint8_t reltim;                   // Casovadlo, pozor, umi to max 255 vterin (max 0xFF)
-
-// Jednoducha synchornizace data a casu RTC modulu rucnim zadanim. Pozor, v kodu pocitame s GMT (-2 hodiny naseho letniho casu)
-// Pri prvnim spusteni je treba nastavit cas. Pro vyssi presnost bychom jej mohli nastavit treba rucnim zadanim pres seriovou linku az za behu. Ja naopak natvrdo v kodu vytvorim objekt s casem a ten se pak pri spusteni nahraje do pameti RTC cipu.
-// Postupne: Rok, mesic, den, hodina, minuta, sekunda, den v tydnu (nedele = 0)
-// Abych si hodiny nerozhodil po kazdem zapnuti, je funkce zaremovana: 
-// DateTime time(2020, 04, 18, 15, 0, 0, 6);
-// Neovereno, ale az bude potreba, tak snad bude fungovat
 
 void setup() {
   // Pripravime si seriak, abychom tam mohli zvracet moudra, které zvracíme po rádiu
@@ -107,7 +100,7 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
     delay(50);                    // Pockej 50ms
   } else {                        // Prejem si zapnout 
     Serial.println(F("Relay ON"));  // Tak ukaz na seriovem portu "Relay ON"
-    Serial.println();             // Pridej mezeru mezi zpravami
+    Serial.println();             // Přidej mezeru mezi zpravami
     digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku, ze odesla zprava "Relay ON"
     delay(50);                    // Pockej 50ms
     digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
