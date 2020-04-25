@@ -1,4 +1,4 @@
-/* Synchronizace casu RTC modulu DC3231:
+/* Synchronizace casu RTC modulu DC3231 skleniku:
  * Pouzij, pokud je potreba synchronizovat cas RTC modulu
  * Nastav prikaz setDS3231time
  * A vysli setDS3231time cca 25 sekund pred zadanym casem
