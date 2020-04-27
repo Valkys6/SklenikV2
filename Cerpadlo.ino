@@ -26,7 +26,7 @@ void setup() {
 
 void loop() {
   
-  //ja programuju pekne v C, cize nejprve delklarace, pouziti az dale, a asi pouzivam jiny funkce nez normalni arduinisti, treba strcmp ;-)
+  // Klapkův koment: ja programuju pekne v C, cize nejprve delklarace, pouziti az dale, a asi pouzivam jiny funkce nez normalni arduinisti, treba strcmp ;-)
   uint8_t buf[20];                // Buffer, radeji s rezervickou
   uint8_t buflen;                 // Promenna
 
@@ -60,12 +60,11 @@ void loop() {
 void relay(uint8_t mode) {       // Funkce pro odeslani retezce
   if (mode==0) {                 // Prejem si vypnout
     Serial.println(F("Relay OFF")); // Ukaz ze chceme vypnou rele
-    Serial.println();            // Pridej radek mezi jednotlivymi zpravami
     digitalWrite(PIN_RELAY, LOW); // Tak vypinam relatko
     
   } else {                       // Nebo si prejem zapnout
     Serial.println(F("Relay ON"));  // Ukaz ze chceme zapnout rele
-    Serial.println();            // Pridej radek mezi jednotlivymi zpravami
     digitalWrite(PIN_RELAY, HIGH); // Zapni relatko
   }
+  Serial.println();            // Pridej radek mezi jednotlivymi zpravami
 }
