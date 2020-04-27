@@ -26,6 +26,7 @@ uint8_t reltim;                   // Casovadlo, pozor, umi to max 255 vterin (ma
 void setup() {
   // Pripravime si seriak, abychom tam mohli zvracet moudra, které zvracíme po rádiu
   Serial.begin(9600);             // Debugging only
+
   Serial.println(F("Valkys super RF Sklenik driver v1.0\n=================================\n"));  // Ukaz pri inicializici
 
   // Nastav vystupy a vstupy
@@ -108,5 +109,5 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
     digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
     delay(50);                    // Pockej 50ms
   }
-  Serial.println();             // Pridej mezeru za touto zpravou
+  Serial.println();             // Pridej mezeru mezi zpravami
 }
