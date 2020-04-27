@@ -93,14 +93,12 @@ void RTC(uint8_t mode) {
 void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port - kontrola co to vlastne odesilame
   if (mode==0) {                  //Prejem si vypnout 
     Serial.println(F("Relay OFF")); // Ukaz na seriovem portu "Relay OFF"
-    Serial.println();             // Pridej mezeru za touto zpravou
     digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku, ze odesla zprava
     delay(50);                    // Pockej 50ms
     digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
     delay(50);                    // Pockej 50ms
   } else {                        // Prejem si zapnout 
     Serial.println(F("Relay ON"));  // Tak ukaz na seriovem portu "Relay ON"
-    Serial.println();             // Přidej mezeru mezi zpravami
     digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku, ze odesla zprava "Relay ON"
     delay(50);                    // Pockej 50ms
     digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
@@ -110,4 +108,5 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
     digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
     delay(50);                    // Pockej 50ms
   }
+  Serial.println();             // Pridej mezeru za touto zpravou
 }
