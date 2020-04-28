@@ -1,9 +1,8 @@
 /* Cerpadlo:
  *  Po prijmu zpravy "Relay_ON!" sepne rele na cerpadle
  *  Po prijmu zpravy "Relay_OF!" cerpadlo vypne
- *  Po prijmu jakekoli zpravy blikne integrovanou LED
- *  Po prijmu zpravy pro zapnuti integrovanou LED blikne 2x
- *  V případě, že neprichazi zprava, vypni rele po 20 sekundach
+ *  Po prijmu jakekoli zpravy rozsviti integrovanou LED
+ *  V pripade, ze neprichazi zprava, vypni rele po 20 sekundach
 */
 
 // Použíté knihovny:
@@ -27,6 +26,7 @@ void setup() {
 
 void loop() {
   
+  //ja programuju pekne v C, cize nejprve delklarace, pouziti az dale, a asi pouzivam jiny funkce nez normalni arduinisti, treba strcmp ;-)
   uint8_t buf[20];                // Buffer, radeji s rezervickou
   uint8_t buflen;                 // Promenna
 
@@ -34,9 +34,6 @@ void loop() {
   buflen=sizeof(buf);             // Do promenny naperu velikost bufiku, to asi slouzi radio knihovne, aby nejela neka za roh
   if (driver.recv(buf, &buflen)) {  // Pokud nam neco dorazilo po radiu, tak se tomu budeme venovat
     digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku, bo prisla zprava
-    delay(50);                    // Pockej 50ms
-    digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
-    delay(50);                    // Pockej 50ms
     Serial.print(F("Message: ")); // Ukazeme
     Serial.println((char*)buf);   // Co to vlastne dorazilo
     if (strcmp("Relay_ON!",buf)==0) { // Pokud je to prikaz pro zapnuti
@@ -52,6 +49,7 @@ void loop() {
 
   //casovadlo
   delay(1000);                    // Cekame vterinu, takze cela smyce pojede 1x za vterinu   
+  digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
   if (reltim!=0) {                // Pokud casovadlo jede, budeme casovat
     if ((--reltim)==0) {          // Cukneme a pokud to prave dojelo, 
       relay(0);                   // Vypnem relatko        
@@ -67,10 +65,6 @@ void relay(uint8_t mode) {       // Funkce pro odeslani retezce
   } else {                       // Nebo si prejem zapnout
     Serial.println(F("Relay ON"));  // Ukaz ze chceme zapnout rele
     digitalWrite(PIN_RELAY, HIGH); // Zapni relatko
-    digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku podruhe, ze prisla zprava pro zapnuti rele
-    delay(50);                   // Pockej 50ms
-    digitalWrite(LED_BUILTIN, LOW);  // Zhasneme ledku
-    delay(50);                   // Pockej 50ms
   }
   Serial.println();            // Pridej radek mezi jednotlivymi zpravami
 }
