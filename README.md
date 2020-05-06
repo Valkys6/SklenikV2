@@ -34,7 +34,7 @@ Projekt je rozdělen na dvě části - dvě ovládací jednotky - Skleník/Čerp
 ## 2. Čerpadlo (neboli Nádrž 2) je jednotka pro sledování hladiny nádrže 2, přijímač a ovladač čerpadla. Obsahuje:
     - Arduino Nano - zpracování signálu ze Skleníku a ovládání relé
     - Trafo zdroj 230V / 5V
-    - Přijímač 433Mhz (Pin 11) se spirálovou anténou pro příjem signálu ze skleníku
+    - Přijímač DR3100 - 433Mhz (Pin 11) se spirálovou anténou pro příjem signálu ze skleníku
     - Horní plovákový senzor PLOV3 (Pin 3) - detekce naplnění nádrže 2 (pokud je sepnuto, hrozí přeplnění - pokud není nádrž 1 zcela plná, sepne čerpadlo k jejímu doplnění)
     - Spodní plovákový senzor PLOV4 (Pin 4) - detekce prázdné nádrže 2
     - Relé (Pin D2) - spíná čerpadlo
