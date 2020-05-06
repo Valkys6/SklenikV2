@@ -1,4 +1,4 @@
-# Projekt Sklenik
+# Projekt SklenikV2
 Zavlažování skleníku pomocí dvou modulů Arduino Nano
 
 Popis projektu:
