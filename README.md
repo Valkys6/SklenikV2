@@ -5,8 +5,8 @@ Popis projektu:
 
 Návrh zavlažovacího systému skleníku verze 2.
 
-U skleníku je 80 l sud (dále Nádrž 1) ze kterého je přiváděna voda samospádem 7mm trubičkami do kapkových vývodů rozmístěných ve skleníku.
-Pokud dochází voda v nádrži u skleniku, radiovým signálem se vyšle povel k sepnutí čerpadla umístěného v 1000 l nádrži (dále Nádrž 2) u domu. Nádrž 2 je zhruba ve vzdálenosti 40m a o cca o 5m níže, než je vtok do nádrže 1. Mezi nádržemi je natažena 1" hadice (zakopána v zemi).
+U skleníku je 80 l sud (dále Nádrž 1) ze kterého je přiváděna voda samospádem 4mm trubičkami (vnitří průměr) do kapkových vývodů rozmístěných ve skleníku.
+Pokud dochází voda v nádrži u skleniku, radiovým signálem se vyšle povel k sepnutí čerpadla umístěného v kubíkové nádrži (dále Nádrž 2) u domu. Nádrž 2 je zhruba ve vzdálenosti 40m a o cca o 5m níže, než je vtok do nádrže 1. Mezi nádržemi je natažena 1" hadice (zakopána v zemi).
 
 Projekt je rozdělen na dvě části - dvě ovládací jednotky - Skleník/Čerpadlo:
 
