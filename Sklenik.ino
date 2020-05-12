@@ -76,26 +76,20 @@ void loop() {
       send_msg("Relay_01!");      // Volam funkci odeslani retezce
     }
   } 
-  if (digitalRead(PIN_SWITCH1) == HIGH) { // Pokud chceme cerpat bez ohledu na plovaky v NADRZ1 (souzi pro zalevani zahrady atp. po prepojeni na hadici) 
+  else if (digitalRead(PIN_SWITCH1) == HIGH) { // Pokud chceme cerpat bez ohledu na plovaky v NADRZ1 (souzi pro zalevani zahrady atp. po prepojeni na hadici) 
     RTC(1);                       // Ukaz na seriovym portu stav na RTC modulu
     RadioMessage(3);              // Ukaz zpravu na seriovym portu, ze chceme zapnout relatko (cerpadlo)
     send_msg("Relay_01!");        // Volam funkci odeslani retezce
   } 
   else {                          
-      RTC(1);                     // Ukaz na seriovym portu stav na RTC modulu
-      RadioMessage(0);            // Ukaz zpravu na seriovym portu, ze chceme vypnout relatko (cerpadlo)
-      send_msg("Relay_00!");      // Volam funkci odeslani retezce
+    RTC(1);                       // Ukaz na seriovym portu stav na RTC modulu
+    RadioMessage(0);              // Ukaz zpravu na seriovym portu, ze chceme vypnout relatko (cerpadlo)
+    send_msg("Relay_00!");        // Volam funkci odeslani retezce
     }
   }
 
-void send_msg(const char* msg) {  // Funkce pro odeslani retezce  
-  driver.send((uint8_t *)msg, strlen(msg)); // Posli to
-  driver.waitPacketSent();        // Cekej, az to bude cely venku                             
-  delay(2000);                    // opakuj odeslani zpravy kazde 2s
-}
-
-void RTC(uint8_t mode) {
-  if (mode==1) {
+void RTC(uint8_t mode) {          // Funkce RTC modulu
+  if (mode==1) {                  // Pokud je RTC modul dostupny
     DateTime time = rtc.now();    // Optej se jaky mame cas
     Serial.println(String("GMT:")+time.timestamp(DateTime::TIMESTAMP_FULL));  // Ukaz GMT cas
     Serial.print("Hour: ");       // Ukaz retezec s popisem, ze chceme ukazat hodinu
@@ -106,9 +100,23 @@ void RTC(uint8_t mode) {
   }
 }
 
-void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port - kontrola co to vlastne odesilame
+void send_msg(const char* msg) {  // Funkce pro odeslani retezce  
+  driver.send((uint8_t *)msg, strlen(msg)); // Posli to
+  driver.waitPacketSent();        // Cekej, az to bude cely venku                             
+  delay(2000);                    // opakuj odeslani zpravy kazde 2s
+}
+
+void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port a ovladani integrovane LED
+  if (mode==0) {                  //Prejem si vypnout 
+    Serial.println(F("Relay OFF")); // Ukaz zpravu na seriovem portu
+    Serial.println();             // Pridej mezeru mezi zpravami
+    digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku, ze odesla zprava
+    delay(50);                    // Pockej 50ms
+    digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
+    delay(50);                    // Pockej 50ms
+  }
   if (mode==1) {                  // Prejem si zapnout stiskem tlacitka
-    Serial.println(F("Relay ON tlacitkem")); // Ukaz na seriovem portu "Relay ON tlacitkem"
+    Serial.println(F("Relay ON tlacitkem")); // Ukaz zpravu na seriovem portu
     Serial.println();             // Pridej mezeru mezi zpravami
     for (int x = 0; x < 2; x++) { // Blikni ledkou 2x
       digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku
@@ -118,7 +126,7 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
     }
   }
   if (mode==2) { 
-    Serial.println(F("Relay ON plovakem"));  // ukaz na seriovem portu "Relay ON plovakem"
+    Serial.println(F("Relay ON plovakem"));  // Ukaz zpravu na seriovem portu
     Serial.println();             // Pridej mezeru mezi zpravami
     for (int x = 0; x < 3; x++) { // Blikni ledkou 3x
       digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku
@@ -128,7 +136,7 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
     }
   }
   if (mode==3) { 
-    Serial.println(F("Relay ON prepinacem"));  // ukaz na seriovem portu "Relay ON plovakem"
+    Serial.println(F("Relay ON prepinacem"));  // Ukaz zpravu na seriovem portu
     Serial.println();             // Pridej mezeru mezi zpravami
     for (int x = 0; x < 4; x++) { // Blikni ledkou 4x
       digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku
@@ -136,13 +144,5 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
       digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
       delay(50);                  // Pockej 50ms
     }
-  }
-  else {                  //Prejem si vypnout 
-    Serial.println(F("Relay OFF")); // Ukaz na seriovem portu "Relay OFF"
-    Serial.println();             // Pridej mezeru mezi zpravami
-    digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku, ze odesla zprava
-    delay(50);                    // Pockej 50ms
-    digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
-    delay(50);                    // Pockej 50ms
   }
 }
