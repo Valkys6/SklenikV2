@@ -85,8 +85,8 @@ void loop() {
     RTC(1);                       // Ukaz na seriovym portu stav na RTC modulu
     RadioMessage(0);              // Ukaz zpravu na seriovym portu, ze chceme vypnout relatko (cerpadlo)
     send_msg("Relay_00!");        // Volam funkci odeslani retezce
-    }
   }
+}
 
 void RTC(uint8_t mode) {          // Funkce RTC modulu
   if (mode==1) {                  // Pokud je RTC modul dostupny
