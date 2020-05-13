@@ -1,25 +1,28 @@
-/* Sklenik (NADRZ1):
+/* Sklenik (NADRZ1)
  *  
  *  Hlavni ovladaci jednotka systemu, ktera sleduje stav na vstupech a odesila zpravy pres radiovy modul DR3100 k jednotce u cerpadla (NADRZ2)
  *  
  *  Vice k projektu na: https://github.com/Valkys6/SklenikV2
  *  
- *  Popis chovani kodu :
- *    1) Arduino pomoci RTC modulu DS3231 ukaze datum a cas (GMT) na seriovem portu
+ *  Popis chovani kodu:
+ *    1) Pomoci RTC modulu DS3231 ukaze datum a cas (GMT) na seriovem portu
  *    2) Potom ukaze teplotu na ridici jednotce (teplomer soucasti RTC modulu)
  *    3) Ukaze aktualni hodinu pro podminku neposilani prikazu k zapnuti cerpadla v case nocniho klidu
  *    4) Vysle a ukaze jednu z nasledujicich zprav zpravu kazde 2 sekundy za techto podminek:
- *          a) "Relay_00!" (Relay OFF) = vychozi zprava (cerpadlo vypnuto)
- *          b) "Relay_01!" (Relay ON) = tlacitko stiknuto (PIN_BUTTON1 = HIGH) + horni plovak nesepnut (PIN_PLOV2 = LOW) dokud neni horni plovak sepnut (PIN_PLOV2 = HIGH)
- *          c) "Relay_02!" (Relay ON) = spodni plovak sepnut (PIN_PLOV1 = HIGH) + (PIN_PLOV2 = LOW) a GMT cas je mezi 5:00 a 19:00  (-2 hodiny letniho casu) dokud neni horni plovak v pozici HIGH
- *          d) "Relay_03!" (Relay ON) = prepinac sepnut (PIN_SWITCH1 = HIGH) dokud nebude opet v pozici LOW
- *    5) Blikne integrovanou LED po vyslani urcite zpravy pri podmince:
- *          a) "Relay_00!" blikne integrovanou LED 1x
- *          b) "Relay_01!" blikne integrovanou LED 2x
- *          c) "Relay_02!" blikne integrovanou LED 3x
- *          c) "Relay_03!" blikne integrovanou LED 4x
+ *          a. "Relay_00!": (Vychozi zprava) Nesepne cerpadlo; pokud je NADRZ1 zcela naplnena ((PIN_PLOV1 = LOW) + (PIN_PLOV2 = HIGH)); a GMT cas je mezi 5:00 a 19:00  (-2 hodiny letniho casu) dokud neni horni plovak v pozici HIGH; a take vychozi zprava
+ *          b. "Relay_01!": Cerpadlo muze sepnout; pokud NADRZ1 neni zcela naplnena (PIN_PLOV2 = LOW)
+ *          c. "Relay_02!": tlacitko stiknuto (PIN_BUTTON1 = HIGH) + horni plovak nesepnut (PIN_PLOV2 = LOW) dokud neni horni plovak sepnut (PIN_PLOV2 = HIGH)
+ *          d. "Relay_03!": spodni plovak sepnut ((PIN_PLOV1 = HIGH) + (PIN_PLOV2 = LOW)) a GMT cas je mezi 5:00 a 19:00  (-2 hodiny letniho casu) dokud neni horni plovak v pozici HIGH
+ *          e. "Relay_04!": prepinac sepnut (PIN_SWITCH1 = HIGH) dokud nebude opet v pozici LOW
+ *    5) Blikne integrovanou LED po vyslani urcite zpravy v poctu:
+ *          a. 0x = neodchazi zadna zprava = CHYBOVY STAV
+ *          b. 1x = "Relay_00!"
+ *          c. 2x = "Relay_01!"
+ *          d. 3x = "Relay_02!"
+ *          e. 4x = "Relay_03!"
+ *          f. 5x = "Relay_04!"
  *  
- *  !Funkce se opakuje kazde 2 sekundy!
+ *    !!!Program se opakuje kazde 2 sekundy!!!
  */
  
 // Pouzite knihovny:
@@ -29,9 +32,9 @@
 
 // Definice pozic vstupu
 #define PIN_BUTTON1  2            // Pozice pro tlacitko
-#define PIN_SWITCH1  5            // Pozice pro prepinac 
-#define PIN_PLOV1  3              // Pozice pro horni plovakova senzor
-#define PIN_PLOV2  4              // Pozice pro dolni plovakova senzor
+#define PIN_SWITCH1  5            // Pozice pro prepinac v NADRZ1
+#define PIN_PLOV1  3              // Pozice pro horni plovakova senzor v NADRZ1
+#define PIN_PLOV2  4              // Pozice pro dolni plovakova senzor v NADRZ1
 
 // Pouzite ovladace periferii
 RH_ASK driver;                    // Objekt ovladace radia
@@ -48,8 +51,8 @@ void setup()  {
   pinMode(PIN_BUTTON1, INPUT);    // Inicilazace tlacitka jako vstup
   pinMode(PIN_SWITCH1, INPUT);    // Inicilazace prepinace jako vstup
   pinMode(PIN_PLOV1, INPUT);      // Inicializace horniho plovakoveho senzoru - PIN_PLOV1
-  pinMode(PIN_PLOV2, INPUT);      // Inicializace spodniho plovakoveho senzoru - PIN_PLOV2
-  RadioMessage(0);                // Defaultne posilame pokyn k vypnuti rele
+  pinMode(PIN_PLOV2, INPUT);      // Inicializace dolniho plovakoveho senzoru - PIN_PLOV2
+  RadioMessage(0);                // Defaultne posilame pokyn k vypnuti rele "RELAY_00!"
 
   // Ukaz pokud nedostanes zpravu z periferii
   if (!driver.init()) Serial.println("Radio driver init failed");  // Nastavení komunikace radioveho vysilace - pin 12 (urceno knihovnou)
@@ -61,9 +64,9 @@ void setup()  {
 
 void loop() {
   DateTime time = rtc.now();      // Optej se RTC modulu jaky mame cas
- 
-  if ((digitalRead(PIN_BUTTON1) == LOW) && (digitalRead(PIN_PLOV1) == LOW)) {  // Pokud je sepnuto tlacitko a sud neni zcela naplnen tak zacni cerpat
-    while (digitalRead(PIN_PLOV1) == LOW) {  // Pokud plati ze sud neni naplnen opakuj nasledujici
+  // "Relay_01!" (Relay ON) = tlacitko stiknuto (PIN_BUTTON1 = HIGH) + horni plovak nesepnut (PIN_PLOV2 = LOW) dokud neni horni plovak sepnut (PIN_PLOV2 = HIGH).
+  if ((digitalRead(PIN_BUTTON1) == LOW) && (digitalRead(PIN_PLOV1) == LOW)) {  // Definice podminky
+    while (digitalRead(PIN_PLOV1) == LOW) {  // Opust podminku pokud neplati
       RTC(1);                     // Ukaz na seriovym portu stav na RTC modulu
       RadioMessage(1);            // Ukaz zpravu na seriovym portu, ze chceme zapnout relatko (cerpadlo)
       send_msg("Relay_01!");      // Volam funkci odeslani retezce
@@ -81,6 +84,7 @@ void loop() {
     RadioMessage(3);              // Ukaz zpravu na seriovym portu, ze chceme zapnout relatko (cerpadlo)
     send_msg("Relay_01!");        // Volam funkci odeslani retezce
   } 
+  // 
   else {                          
     RTC(1);                       // Ukaz na seriovym portu stav na RTC modulu
     RadioMessage(0);              // Ukaz zpravu na seriovym portu, ze chceme vypnout relatko (cerpadlo)
@@ -107,42 +111,46 @@ void send_msg(const char* msg) {  // Funkce pro odeslani retezce
 }
 
 void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port a ovladani integrovane LED
-  if (mode==0) {                  //Prejem si vypnout 
-    Serial.println(F("Relay OFF")); // Ukaz zpravu na seriovem portu
-    Serial.println();             // Pridej mezeru mezi zpravami
-    digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku, ze odesla zprava
-    delay(50);                    // Pockej 50ms
-    digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
-    delay(50);                    // Pockej 50ms
-  }
-  if (mode==1) {                  // Prejem si zapnout stiskem tlacitka
-    Serial.println(F("Relay ON tlacitkem")); // Ukaz zpravu na seriovem portu
-    Serial.println();             // Pridej mezeru mezi zpravami
-    for (int x = 0; x < 2; x++) { // Blikni ledkou 2x
-      digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku
+  switch (mode) {            // Prejdi na pripad, ktereho se nam to tyka
+    case 0:                  // Prejem si vypnout 
+      Serial.println(F("Relay OFF")); // Ukaz zpravu na seriovem portu
+      Serial.println();           // Pridej mezeru mezi zpravami
+      digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku, ze odesla zprava
       delay(50);                  // Pockej 50ms
       digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
       delay(50);                  // Pockej 50ms
-    }
-  }
-  if (mode==2) { 
-    Serial.println(F("Relay ON plovakem"));  // Ukaz zpravu na seriovem portu
-    Serial.println();             // Pridej mezeru mezi zpravami
-    for (int x = 0; x < 3; x++) { // Blikni ledkou 3x
-      digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku
-      delay(50);                  // Pockej 50ms
-      digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
-      delay(50);                  // Pockej 50ms
-    }
-  }
-  if (mode==3) { 
-    Serial.println(F("Relay ON prepinacem"));  // Ukaz zpravu na seriovem portu
-    Serial.println();             // Pridej mezeru mezi zpravami
-    for (int x = 0; x < 4; x++) { // Blikni ledkou 4x
-      digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku
-      delay(50);                  // Pockej 50ms
-      digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
-      delay(50);                  // Pockej 50ms
-    }
+      break;
+    case 1:                        // Prejem si zapnout stiskem tlacitka
+      Serial.println(F("Relay ON tlacitkem")); // Ukaz zpravu na seriovem portu
+      Serial.println();             // Pridej mezeru mezi zpravami
+      for (int x = 0; x < 2; x++) { // Blikni ledkou 2x
+        digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku
+        delay(50);                  // Pockej 50ms
+        digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
+        delay(50);                  // Pockej 50ms
+      }
+      break;
+    case 2:
+      Serial.println(F("Relay ON plovakem"));  // Ukaz zpravu na seriovem portu
+      Serial.println();             // Pridej mezeru mezi zpravami
+      for (int x = 0; x < 3; x++) { // Blikni ledkou 3x
+        digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku
+        delay(50);                  // Pockej 50ms
+        digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
+        delay(50);                  // Pockej 50ms
+      }
+      break;
+    case 3:
+      Serial.println(F("Relay ON prepinacem"));  // Ukaz zpravu na seriovem portu
+      Serial.println();             // Pridej mezeru mezi zpravami
+      for (int x = 0; x < 4; x++) { // Blikni ledkou 4x
+        digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku
+        delay(50);                  // Pockej 50ms
+        digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
+        delay(50);                  // Pockej 50ms
+      }
+      break;
+    default: //kdyz neznam
+      return;  //tak koncim      
   }
 }
