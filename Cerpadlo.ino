@@ -22,8 +22,8 @@
  *          d. 4x = "Relay_03!"
  *          e. 5x = "Relay_04!"
  *          f. 0x = neprichazi zadna zprava = CHYBOVY STAV - v pripade, ze bylo rele pred timto stavem zapnuto, vypne jej po 20 sekundach
- *    4) Rozsiti LED3 (zluta) nebo LED4 (take zluta)
- *          a. PIN_LED3 = HIGH: Prichazi zprava "Relay_04!" (prepinac 1 na NADRZ1 sepnut)
+ *    4) Rozvsiti LED3 (zluta) nebo LED4 (take zluta)
+ *          a. PIN_LED3 = HIGH: Prepinac 1 na NADRZ1 sepnut a prichazi zprava "Relay_04!"  na NADRZ1 sepnut)
  *          b. PIN_LED4 = HIGH: pokud je prepinac 2 sepnut (PIN_SWITCH2 = HIGH)
  *          
  *    !!!Program se opakuje kazde 3 sekundy!!! - Nutne overit casovani v provozu!!
@@ -51,15 +51,17 @@ void setup() {
   Serial.begin(9600);             // Nastav rychlost prenosu
   Serial.println(F("Valkys super RF Cerpadlo driver v1.0\n=================================\n")); // Ukaz na po pripojeni na seriovy port
 
-  // Nastav vystupy a vstupy 
+  // Nastav vystupy
   pinMode(LED_BUILTIN, OUTPUT);   // Inicializace LED_BUILDIN jako vystup
   pinMode(PIN_LED3, OUTPUT);      // Inicializace PIN_LED4 jako vystup
   pinMode(PIN_RELAY, OUTPUT);     // Inicializace digitálního pinu pro RELAY
+  relay(0);                       // Defaultne je rele vypnute
+  reltim=0;                       // Necasujeme
+  
+  // Nastav vstupy
   pinMode(PIN_SWITCH2, INPUT);    // Inicializace prepinace jako vstup
   pinMode(PIN_PLOV3, INPUT);      // Inicializace horniho plovakoveho senzoru - PIN_PLOV3
   pinMode(PIN_PLOV4, INPUT);      // Inicializace dolniho plovakoveho senzoru - PIN_PLOV4
-  relay(0);                       // Defaultne je rele vypnute
-  reltim=0;                       // Necasujeme
   
   // Ukaz pokud nedostanes zpravu z periferii
   if (!driver.init()) Serial.println("Radio driver init failed"); // Nastavení komunikace rádiového přijímače - pin 11 (určeno asi knihovnou)
@@ -79,31 +81,31 @@ void loop() {
         relay(0);                 // Okamzite vypneme relatko
         reltim=0;                 // A casovadlo muzem zarazit
     }
-    // Podminka pro "Relay_01!"; prepinac 1 nesepnut
+    // Podminka pro "Relay_01!" + prepinac 2 nesepnut
     else if ((strcmp("Relay_01",buf) == 0) && (digitalRead(PIN_PLOV3) == LOW) && (digitalRead(PIN_SWITCH2) == LOW)) {  // Cerpadlo je vypnute, ale je pripraveno sepnout. Ceka, jestli bude prepinac 2 sepnut (PIN_SWITCH2 = HIGH). Pokud se stane, je cerpadlo sepnuto, dokud neobdrzi "Relay_00!", nebo dokud neni NADRZ2 prazdna (PIN_PLOV3 = LOW)
-      while ((digitalRead(PIN_PLOV3) == LOW) || (digitalRead(PIN_SWITCH2) == HIGH)) {  // Opakuj, dokud neni NARDZ2 prazdna, nebo dokud je prepinac 2 sepnut (PIN_SWITCH2 = HIGH)
+      while ((digitalRead(PIN_PLOV3) == LOW) {  // Opakuj, dokud neni NARDZ2 prazdna, nebo dokud je prepinac 2 sepnut (PIN_SWITCH2 = HIGH)
         relay(1);                 // Je mozne zapnout cerpadlo
         reltim=20;                // Nastavime casovadlo, aby rele v pripade neprijmuti zadne zpravy a nebo je voda z NADRZ2 vycerpana vyplo po 20 sekundach
       }
     }
-    // Podminka pro "Relay_01!"; ceka na stav prepinace 2
+    // Podminka pro "Relay_01!" + prepinac 2 sepnut
     else if ((strcmp("Relay_01",buf) == 0) && (digitalRead(PIN_PLOV3) == LOW) && (digitalRead(PIN_SWITCH2) == HIGH)) {  // Cerpadlo je vypnute, ale je pripraveno sepnout. Ceka, jestli bude prepinac 2 sepnut (PIN_SWITCH2 = HIGH). Pokud se stane, je cerpadlo sepnuto, dokud neobdrzi "Relay_00!", nebo dokud neni NADRZ2 prazdna (PIN_PLOV3 = LOW)
       while ((digitalRead(PIN_PLOV3) == LOW) || (digitalRead(PIN_SWITCH2) == HIGH)) {  // Opakuj, dokud neni NARDZ2 prazdna, nebo dokud je prepinac 2 sepnut (PIN_SWITCH2 = HIGH)
-        relay(1);                 // Je mozne zapnout cerpadlo
+        relay(2);                 // Je mozne zapnout cerpadlo
         reltim=20;                // Nastavime casovadlo, aby rele v pripade neprijmuti zadne zpravy a nebo je voda z NADRZ2 vycerpana vyplo po 20 sekundach
       }
     }
     // Podminka pro "Relay_02!"
     else if ((strcmp("Relay_02!",buf) == 0) && (digitalRead(PIN_PLOV3) == LOW)) {  // Pokud je to prikaz pro zapnuti a pokud neni NADRZ2 prazdna
       while (digitalRead(PIN_PLOV3) == LOW) { // Opakuj, dokud NADRZ2 neni prazdna
-        relay(2);                 // Zapneme cerpadlo
+        relay(3);                 // Zapneme cerpadlo
         reltim=20;                // Nastavime casovadlo, aby rele v pripade neprijmuti zadne zpravy a dokud NADRZ2 neni prazdna vyplo po 20 sekundach
       }
     }  
     // Podminka pro "Relay_02!"
     else if ((strcmp("Relay_03!",buf) == 0) && (digitalRead(PIN_PLOV3) == LOW)) {  // Pokud je to prikaz pro zapnuti a pokud neni NADRZ2 prazdna
       while (digitalRead(PIN_PLOV3) == LOW) { // Opakuj, dokud NADRZ2 neni prazdna
-        relay(3);                 // Zapneme cerpadlo
+        relay(4);                 // Zapneme cerpadlo
         reltim=20;                // Nastavime casovadlo, aby rele v pripade neprijmuti zadne zpravy a nebo je NADRZ2 prazdna, vyplo po 20 sekundach
       }
     }
@@ -141,7 +143,7 @@ void relay(uint8_t mode) {        // Funkce pro odeslani retezce
       digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
       delay(50);                  // Pockej 50ms
       break;
-    case 1:                       // Zprava "Relay_01"
+    case 1:                       // Zprava "Relay_01" + prepinac 2 nesepnut
       Serial.println(F("Relay possible to ON")); // Ukaz zpravu na seriovem portu
       Serial.println();           // Pridej mezeru mezi zpravami
       for (int x = 0; x < 2; x++) { // Blikni ledkou 2x
@@ -150,7 +152,17 @@ void relay(uint8_t mode) {        // Funkce pro odeslani retezce
         digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
         delay(50);                // Pockej 50ms
       }
-  else {                        // Nebo si prejem zapnout
+     case 2:                      // Zprava "Relay_01" + prepinac 2 sepnut
+      Serial.println(F("Relay possible to ON")); // Ukaz zpravu na seriovem portu
+      Serial.println();           // Pridej mezeru mezi zpravami
+      digitalWrite(PIN_LED3, HIGH); // Rozsvit LED1 dokud neprijde jina zprava
+      for (int x = 0; x < 2; x++) { // Blikni ledkou 2x
+        digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku
+        delay(50);                // Pockej 50ms
+        digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
+        delay(50);                // Pockej 50ms
+      }
+  else {                          // Nebo si prejem zapnout
     Serial.println(F("Relay ON"));  // Ukaz ze chceme zapnout rele
     digitalWrite(PIN_RELAY, HIGH);  // Zapni relatko
   } Serial.println();             // Pridej radek mezi jednotlivymi zpravami
