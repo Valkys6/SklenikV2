@@ -10,7 +10,7 @@ Pokud dochází voda v nádrži u skleniku, radiovým signálem se vyšle povel 
 
 Projekt je rozdělen na dvě části - dvě ovládací jednotky - Skleník/Čerpadlo:
 
-## 1. Skleník (NADRZ1) je jednotka pro sledování stavu hladiny NADRZ1 a vysílač. Obsahuje:
+## 1. Skleník (NADRZ1) je jednotka pro sledování stavu hladiny v sudu u sklenáku a vysílač. Obsahuje:
     - Arduino Nano - řídící jednotka
     - RTC modul DS3231
     - Zdroj 5V - Solární panel 12V, stabilizátor napětí + nabíječka baterií + baterie (na pin 5V) + StepUp convertor 5V (tak daleko od baráku totiž elektriku nemam (a je to eko))
@@ -30,7 +30,7 @@ Projekt je rozdělen na dvě části - dvě ovládací jednotky - Skleník/Čerp
         - Půdní vlhkoměr
         - Ovládání oken - odvětrávání pomocí pneu/hydro zvedáků
     
-## 2. Čerpadlo (NADRZ2) je jednotka pro sledování hladiny NADRZ2, přijímač a ovladač čerpadla. Obsahuje:
+## 2. Čerpadlo (NADRZ2) je jednotka pro sledování hladiny nádrže u domu, přijímač a ovladač čerpadla. Obsahuje:
     - Arduino Nano - zpracování signálu ze Skleníku a ovládání relé
     - Trafo zdroj 230V / 5V
     - Přijímač DR3100 - 433Mhz (Pin 11) pro příjem signálu ze skleníku
