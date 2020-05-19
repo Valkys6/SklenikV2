@@ -1,9 +1,7 @@
 # Projekt SklenikV2
-Zavlažování skleníku pomocí dvou modulů Arduino Nano
+Návrh zavlažovacího systému skleníku.
 
 Popis projektu:
-
-Návrh zavlažovacího systému skleníku verze 2.
 
 U skleníku je 120 l sud (dále NADRZ1) ze kterého je přiváděna voda samospádem 4mm trubičkami (vnitří průměr) do kapkových vývodů rozmístěných ve skleníku.
 Pokud dochází voda v nádrži u skleniku, nebo chceme sepnout čerpadlo manuálně (tlačítkem / spínačem), radiovým signálem se vyšle povel k sepnutí čerpadla umístěného v kubíkové nádrži (dále NADRZ2) u domu. NADRZ2 je zhruba ve vzdálenosti 40m a o cca o 5m níže, než je vtok do nádrže 1. Mezi nádržemi je natažena 1" hadice (zakopána v zemi).
