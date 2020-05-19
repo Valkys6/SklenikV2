@@ -21,11 +21,11 @@
  *         d. 4x = "Relay_03!"
  *         e. 5x = "Relay_04!"
  *         f. 0x = !!!CHYBOVY STAV!!! (neodchazi zadna zprava)
- *    6) Rozvsiti LED1 (zelena) nebo LED2 (zluta) v pripade 
+ *    6) Rozsiti LED1 nebo LED2 v pripade 
  *         a. PIN_LED1 = HIGH: pokud je tlacitko 1 stisknuto (PIN_SWITCH2 = HIGH) + NADRZ1 neni plna ((PIN_PLOV1 = LOW) && (PIN_PLOV2 = LOW)), dokud neni NADRZ1 plna (PIN_PLOV2 = HIGH)
  *         b. PIN_LED2 = HIGH: pokud je prepinac 1 sepnut (PIN_SWITCH2 = HIGH)
  *  
- *    !!!Program se opakuje kazde 4 sekundy!!!
+ *    !!!Program se opakuje kazde 2 sekundy!!!
 */
  
 // Pouzite knihovny:
@@ -53,17 +53,14 @@ void setup() {
   Serial.begin(9600);             // Nastav rychlost prenosu
   Serial.println(F("Valkys super RF Sklenik driver v1.0\n=================================\n"));  // Ukaz pri inicializici
 
-  // Nastav vystupy
+  // Nastav vystupy a vstupy
   pinMode(LED_BUILTIN, OUTPUT);   // Inicializace integrovane LED jako vystup
-  pinMode(PIN_LED1, OUTPUT);      // Inicializace LED 1 (
-  RadioMessage(0);                // Defaultne posilame pokyn k vypnuti rele "RELAY_00!"
-
-  // Nastav vstupy
   pinMode(PIN_BUTTON1, INPUT);    // Inicilazace tlacitka jako vstup
   pinMode(PIN_SWITCH1, INPUT);    // Inicilazace prepinace jako vstup
   pinMode(PIN_PLOV1, INPUT);      // Inicializace dolniho plovakoveho senzoru - PIN_PLOV1
   pinMode(PIN_PLOV2, INPUT);      // Inicializace horniho plovakoveho senzoru - PIN_PLOV2
-  
+  RadioMessage(0);                // Defaultne posilame pokyn k vypnuti rele "RELAY_00!"
+
   // Ukaz pokud nedostanes zpravu z periferii
   if (!driver.init()) Serial.println("Radio driver init failed");  // Nastavení komunikace radioveho vysilace - pin 12 (urceno knihovnou)
   if (!rtc.begin()) {             // Nastaveni komunikace RTC modulu
@@ -131,64 +128,63 @@ void RTC(uint8_t mode) {          // Funkce RTC modulu
 void send_msg(const char* msg) {  // Funkce pro odeslani retezce  
   driver.send((uint8_t *)msg, strlen(msg)); // Posli to
   driver.waitPacketSent();        // Cekej, az to bude cely venku                            
-  delay(2000);                    // opakuj odeslani zpravy kazde 2s
+  delay(4000);                    // opakuj odeslani zpravy kazde 4s
 }
 
-void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port a ovladani integrovane LED
+void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port a ovladani LED vystupu (LED_BUILDIN, LED1, LED2)
   switch (mode) {                 // Prejdi na pripad, ktereho se to tyka
     case 0:                       // Zprava "Relay_00"
       Serial.println(F("Relay OFF")); // Ukaz zpravu na seriovem portu
-      Serial.println();           // Pridej mezeru mezi zpravami
+      Serial.println();           // Pridej radek mezi jednotlivymi zpravami
       digitalWrite(PIN_LED1, LOW);  // Zhasni LED1
       digitalWrite(PIN_LED2, LOW);  // Zhasni LED2
-      digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku, ze odesla zprava
+      digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime LED_BUILDIN, ze odesla zprava
       delay(50);                  // Pockej 50ms
-      digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
+      digitalWrite(LED_BUILTIN, LOW); // Zhasneme LED_BUILDIN
       delay(50);                  // Pockej 50ms
-      digitalWrite(PIN_LED1, LOW);  // Rozsvitime ledku, ze odesla zprava
       break;
     case 1:                       // Zprava "Relay_01"
       Serial.println(F("Relay possible to ON")); // Ukaz zpravu na seriovem portu
-      Serial.println();           // Pridej mezeru mezi zpravami
-      for (int x = 0; x < 2; x++) { // Blikni ledkou 2x
-        digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku
+      Serial.println();           // Pridej radek mezi jednotlivymi zpravami
+      for (int x = 0; x < 2; x++) { // Blikni LED_BUILDIN 2x
+        digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime LED_BUILDIN
         delay(50);                // Pockej 50ms
-        digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
+        digitalWrite(LED_BUILTIN, LOW); // Zhasneme LED_BUILDIN
         delay(50);                // Pockej 50ms
       }
       break;
     case 2:                       // Zprava "Relay_02"
       Serial.println(F("Relay ON by BUTTON1")); // Ukaz zpravu na seriovem portu
-      Serial.println();           // Pridej mezeru mezi zpravami
+      Serial.println();           // Pridej radek mezi jednotlivymi zpravami
       digitalWrite(PIN_LED1, HIGH); // Rozsvit LED1 dokud neprijde jina zprava
-      for (int x = 0; x < 3; x++) { // Blikni ledkou 3x
-        digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku
+      for (int x = 0; x < 3; x++) { // Blikni LED_BUILDIN 3x
+        digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime LED_BUILDIN
         delay(50);                // Pockej 50ms
-        digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
+        digitalWrite(LED_BUILTIN, LOW); // Zhasneme LED_BUILDIN
         delay(50);                // Pockej 50ms
       }
       break;
     case 3:                       // Zprava "Relay_03"
       Serial.println(F("Relay ON by PLOV1"));  // Ukaz zpravu na seriovem portu
-      Serial.println();           // Pridej mezeru mezi zpravami
+      Serial.println();           // Pridej radek mezi jednotlivymi zpravami
       digitalWrite(PIN_LED1, LOW);  // Zhasni LED1
       digitalWrite(PIN_LED2, LOW);  // Zhasni LED2
-      for (int x = 0; x < 4; x++) { // Blikni ledkou 4x
-        digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku
+      for (int x = 0; x < 4; x++) { // Blikni LED_BUILDIN 4x
+        digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime LED_BUILDIN
         delay(50);                // Pockej 50ms
-        digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
+        digitalWrite(LED_BUILTIN, LOW); // Zhasneme LED_BUILDIN
         delay(50);                // Pockej 50ms
       }
       break;
     case 4:                       // Zprava "Relay_04"
-      Serial.println(F("Relay ON prepinacem"));  // Ukaz zpravu na seriovem portu
-      Serial.println();           // Pridej mezeru mezi zpravami
+      Serial.println(F("Relay ON by SWITCH1"));  // Ukaz zpravu na seriovem portu
+      Serial.println();           // Pridej radek mezi jednotlivymi zpravami
       digitalWrite(PIN_LED1, LOW);  // Zhasni LED1
       digitalWrite(PIN_LED2, HIGH); // Rozsvit LED2
-      for (int x = 0; x < 5; x++) { // Blikni ledkou 5x
-        digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime ledku
+      for (int x = 0; x < 5; x++) { // Blikni LED_BUILDIN 5x
+        digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime LED_BUILDIN
         delay(50);                // Pockej 50ms
-        digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
+        digitalWrite(LED_BUILTIN, LOW); // Zhasneme LED_BUILDIN
         delay(50);                // Pockej 50ms
       }
       break;
