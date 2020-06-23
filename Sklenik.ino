@@ -40,8 +40,8 @@
 #define PIN_PLOV2  4              // Pozice pro horni plovakovy senzor v NADRZ1
 
 // Definice pozic digitalnich vystupu (LED_BUILDIN je automaticky na pinu 13) 
-#define PIN_LED1  10              // Pozice pro LED2 k indikaci, ze tlacitko 1 bylo stisknuto a sviti, dokud neni NADRZ1 plna (PIN_PLOV2 = HIGH)
-#define PIN_LED2  11              // Pozice pro LED2 k indikaci, ze prepinac 1 je sepnut
+#define PIN_LED1  8              // Pozice pro LED2 k indikaci, ze tlacitko 1 bylo stisknuto a sviti, dokud neni NADRZ1 plna (PIN_PLOV2 = HIGH)
+#define PIN_LED2  9              // Pozice pro LED2 k indikaci, ze prepinac 1 je sepnut
 
 // Pouzite ovladace periferii
 RH_ASK driver;                    // Objekt ovladace radia
@@ -144,8 +144,8 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
     case 1:                       // Zprava "Relay_01"
       Serial.println(F("Relay possible to ON")); // Ukaz zpravu na seriovem portu
       Serial.println();           // Pridej radek mezi jednotlivymi zpravami
-      //digitalWrite(PIN_LED1, LOW);  // Zhasni LED1
-      //digitalWrite(PIN_LED2, LOW);  // Zhasni LED2
+      digitalWrite(PIN_LED1, LOW);  // Zhasni LED1
+      digitalWrite(PIN_LED2, LOW);  // Zhasni LED2
       for (int x = 0; x < 2; x++) { // Blikni LED_BUILDIN 2x
         digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime LED_BUILDIN
         delay(100);                // Pockej 50ms
