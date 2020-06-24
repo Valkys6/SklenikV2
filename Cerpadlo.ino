@@ -22,7 +22,7 @@
  *          d. 4x = "Relay_03!"
  *          e. 5x = "Relay_04!"
  *          f. 0x = neprichazi zadna zprava = CHYBOVY STAV - v pripade, ze bylo rele pred timto stavem zapnuto, vypne jej po 20 sekundach
- *    4) Rozvsiti LED3 (zluta) nebo LED4 (take zluta) pokud:
+ *    4) Rozvsiti LED3 (cervena) nebo LED4 (zluta) pokud:
  *          a. PIN_LED3 = HIGH: je prepinac 2 sepnut (PIN_SWITCH2 = HIGH)
  *          b. PIN_LED4 = HIGH: je prepinac 1 na NADRZ1 sepnut a prichazi zprava "Relay_04!" na NADRZ1 sepnut)
  *          
@@ -40,8 +40,8 @@
 #define PIN_PLOV4  4              // Pozice pro horni plovakovy senzor v NADRZ2
 
 // Definice pozic digitalnich vystupu (LED_BUILDIN je automaticky na pinu 13) 
-#define PIN_LED3  10              // Pozice pro LED3 k indikaci, ze prepinac 2 je sepnut
-#define PIN_LED4  12              // Pozice pro LED4 k indikaci, ze prepinac 1 na NADRZ1 je sepnut
+#define PIN_LED3  9               // Pozice pro LED3 (cervena) k indikaci, ze prepinac 2 je sepnut
+#define PIN_LED4  10              // Pozice pro LED4 (zluta) k indikaci, ze prepinac 1 na NADRZ1 je sepnut
 
 // Pouzite ovladace periferii
 RH_ASK driver;                    // Objekt ovladace radia
@@ -54,7 +54,8 @@ void setup() {
 
   // Nastav vystupy
   pinMode(LED_BUILTIN, OUTPUT);   // Inicializace LED_BUILDIN jako vystup
-  pinMode(PIN_LED3, OUTPUT);      // Inicializace PIN_LED4 jako vystup
+  pinMode(PIN_LED3, OUTPUT);      // Inicializace PIN_LED3 jako vystup
+  pinMode(PIN_LED4, OUTPUT);      // Inicializace PIN_LED4 jako vystup
   pinMode(PIN_RELAY, OUTPUT);     // Inicializace digitálního pinu pro RELAY
   relay(0);                       // Defaultne je rele vypnute
   reltim=0;                       // Necasujeme
@@ -211,5 +212,7 @@ void relay(uint8_t mode) {        // Funkce pro odeslani retezce na seriovy port
         delay(50);                // Pockej 50ms
       }
       break;
+    default:                      // Kdyz stav neznam (chybovy stav)
+      return;                     // Tak ukonci smycy a zacni znovu 
   }
 }
