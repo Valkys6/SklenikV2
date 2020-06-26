@@ -40,8 +40,8 @@
 #define PIN_PLOV4  4              // Pozice pro horni plovakovy senzor v NADRZ2
 
 // Definice pozic digitalnich vystupu (LED_BUILDIN je automaticky na pinu 13) 
-#define PIN_LED3  9               // Pozice pro LED3 (cervena) k indikaci, ze prepinac 2 je sepnut
-#define PIN_LED4  10              // Pozice pro LED4 (zluta) k indikaci, ze prepinac 1 na NADRZ1 je sepnut
+#define PIN_LED3  6               // Pozice pro LED3 (cervena) k indikaci, ze prepinac 2 je sepnut
+#define PIN_LED4  7               // Pozice pro LED4 (zluta) k indikaci, ze prepinac 1 na NADRZ1 je sepnut
 
 // Pouzite ovladace periferii
 RH_ASK driver;                    // Objekt ovladace radia
@@ -70,7 +70,7 @@ void setup() {
 }
 
 void loop() {
-  uint8_t buf[20];                // Deklarace bufferu, radeji s rezervickou
+  uint8_t buf[20];                 // Deklarace bufferu, radeji s rezervickou
   uint8_t buflen;                 // Promenna bufferu
 
   //obsluha radia
@@ -80,19 +80,19 @@ void loop() {
     Serial.println((char*)buf);   // Co to vlastne dorazilo  
     // Podminka pro "Relay_00!"
     if (strcmp("Relay_00!",buf)==0) { // Cerpadlo nemuze automaticky sepnout, pokud je NADRZ1 plna
-        relay(0);                 // Okamzite vypneme cerpadlo
+        relay(0);                 // Vypneme cerpadlo
         reltim=0;                 // A casovadlo muzem zarazit
     }
     // Podminka pro "Relay_01!" + prepinac 2 nesepnut
-    else if ((strcmp("Relay_01",buf) == 0) && (digitalRead(PIN_PLOV3) == LOW) && (digitalRead(PIN_SWITCH2) == LOW)) { // Cerpadlo je vypnute, ale je pripraveno sepnout. Ceka, jestli bude prepinac 2 sepnut (PIN_SWITCH2 = HIGH). Pokud se stane, je cerpadlo sepnuto, dokud neobdrzi "Relay_00!", nebo dokud neni NADRZ2 prazdna (PIN_PLOV3 = LOW)
+    else if ((strcmp("Relay_01!",buf)==0) && (digitalRead(PIN_PLOV3) == LOW) && (digitalRead(PIN_SWITCH2) == LOW)) { // Cerpadlo je vypnute, ale je pripraveno sepnout. Ceka, jestli bude prepinac 2 sepnut (PIN_SWITCH2 = HIGH). Pokud se stane, je cerpadlo sepnuto, dokud neobdrzi "Relay_00!", nebo dokud neni NADRZ2 prazdna (PIN_PLOV3 = LOW)
       while (digitalRead(PIN_PLOV3) == LOW) {  // Opakuj, dokud neni NARDZ2 prazdna, nebo dokud je prepinac 2 sepnut (PIN_SWITCH2 = HIGH)
         relay(1);                 // Je mozne zapnout cerpadlo
         reltim=20;                // Nastavime casovadlo, aby rele v pripade neprijmuti zadne zpravy a nebo je voda z NADRZ2 vycerpana vyplo po 20 sekundach
       }
     }
     // Podminka pro "Relay_01!" + prepinac 2 sepnut
-    else if ((strcmp("Relay_01",buf) == 0) && (digitalRead(PIN_PLOV3) == LOW) && (digitalRead(PIN_SWITCH2) == HIGH)) {  // Cerpadlo je vypnute, ale je pripraveno sepnout. Ceka, jestli bude prepinac 2 sepnut (PIN_SWITCH2 = HIGH). Pokud se stane, je cerpadlo sepnuto, dokud neobdrzi "Relay_00!", nebo dokud neni NADRZ2 prazdna (PIN_PLOV3 = LOW)
-      while ((digitalRead(PIN_PLOV3) == LOW) || (digitalRead(PIN_SWITCH2) == HIGH)) { // Opakuj, dokud neni NARDZ2 prazdna, nebo dokud je prepinac 2 sepnut (PIN_SWITCH2 = HIGH)
+    else if ((strcmp("Relay_01!",buf)==0) && (digitalRead(PIN_PLOV3) == LOW) && (digitalRead(PIN_SWITCH2) == HIGH)) {  // Cerpadlo je vypnute, ale je pripraveno sepnout. Ceka, jestli bude prepinac 2 sepnut (PIN_SWITCH2 = HIGH). Pokud se stane, je cerpadlo sepnuto, dokud neobdrzi "Relay_00!", nebo dokud neni NADRZ2 prazdna (PIN_PLOV3 = LOW)
+      while ((digitalRead(PIN_PLOV3) == LOW) || (digitalRead(PIN_SWITCH2) == LOW)) { // Opakuj, dokud neni NARDZ2 prazdna, nebo dokud je prepinac 2 sepnut (PIN_SWITCH2 = HIGH)
         relay(2);                 // Zapnene cerpadlo
         reltim=20;                // Nastavime casovadlo, aby rele v pripade neprijmuti zadne zpravy (a nebo je NADRZ2 vycerpana) vyplo po 20 sekundach
       }
@@ -124,7 +124,7 @@ void loop() {
   }
 
   //casovadlo
-  delay(2000);                    // Cekame 2s, takze cely program pojede 1x za 2 sekundy 
+  delay(4000);                    // Cekame 4s, takze cely program pojede 1x za 4 sekundy 
   digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
   if (reltim!=0) {                // Pokud casovadlo jede, budeme casovat
     if ((--reltim)==0) {          // Cukneme a pokud to prave dojelo, 
@@ -143,9 +143,9 @@ void relay(uint8_t mode) {        // Funkce pro odeslani retezce na seriovy port
       digitalWrite(PIN_LED4, LOW);  // Zhasni LED4
       digitalWrite(PIN_RELAY, LOW); // Vypni cerpadlo
       digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime LED_BUILDIN, ze prisla zprava
-      delay(50);                  // Pockej 50ms
+      delay(100);                  // Pockej 50ms
       digitalWrite(LED_BUILTIN, LOW); // Zhasneme LED_BUILDIN
-      delay(50);                  // Pockej 50ms
+      delay(100);                  // Pockej 50ms
       break;
     case 1:                       // Zprava "Relay_01" + prepinac 2 nesepnut
       Serial.println(F("Relay possible to ON")); // Ukaz zpravu na seriovem portu
@@ -155,9 +155,9 @@ void relay(uint8_t mode) {        // Funkce pro odeslani retezce na seriovy port
       digitalWrite(PIN_RELAY, LOW); // Vypni cerpadlo
       for (int x = 0; x < 2; x++) { // Blikni LED_BUILDIN 2x
         digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime LED_BUILDIN
-        delay(50);                // Pockej 50ms
+        delay(100);                // Pockej 100ms
         digitalWrite(LED_BUILTIN, LOW); // Zhasneme LED_BUILDIN
-        delay(50);                // Pockej 50ms
+        delay(100);                // Pockej 100ms
       }
       break;
     case 2:                       // Zprava "Relay_01" + prepinac 2 sepnut
@@ -168,9 +168,9 @@ void relay(uint8_t mode) {        // Funkce pro odeslani retezce na seriovy port
       digitalWrite(PIN_RELAY, HIGH);  // Zapni cerpadlo
       for (int x = 0; x < 2; x++) { // Blikni LED_BUILDIN 2x
         digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime LED_BUILDIN
-        delay(50);                // Pockej 50ms
+        delay(100);                // Pockej 100ms
         digitalWrite(LED_BUILTIN, LOW); // Zhasneme LED_BUILDIN
-        delay(50);                // Pockej 50ms
+        delay(100);                // Pockej 100ms
       }
       break;
     case 3:                       // Zprava "Relay_02"
@@ -181,9 +181,9 @@ void relay(uint8_t mode) {        // Funkce pro odeslani retezce na seriovy port
       digitalWrite(PIN_RELAY, HIGH);  // Zapni cerpadlo
       for (int x = 0; x < 3; x++) { // Blikni LED_BUILDIN 3x
         digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime LED_BUILDIN
-        delay(50);                // Pockej 50ms
+        delay(100);                // Pockej 100ms
         digitalWrite(LED_BUILTIN, LOW); // Zhasneme LED_BUILDIN
-        delay(50);                // Pockej 50ms
+        delay(100);                // Pockej 100ms
       }
       break;
     case 4:                       // Zprava "Relay_03"
@@ -194,9 +194,9 @@ void relay(uint8_t mode) {        // Funkce pro odeslani retezce na seriovy port
       digitalWrite(PIN_RELAY, HIGH);  // Zapni cerpadlo
       for (int x = 0; x < 4; x++) { // Blikni LED_BUILDIN 4x
         digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime LED_BUILDIN
-        delay(50);                // Pockej 50ms
+        delay(100);                // Pockej 100ms
         digitalWrite(LED_BUILTIN, LOW); // Zhasneme LED_BUILDIN
-        delay(50);                // Pockej 50ms
+        delay(100);                // Pockej 100ms
       }
       break;
     case 5:                       // Zprava "Relay_04"
@@ -207,9 +207,9 @@ void relay(uint8_t mode) {        // Funkce pro odeslani retezce na seriovy port
       digitalWrite(PIN_RELAY, HIGH);  // Zapni cerpadlo
       for (int x = 0; x < 5; x++) { // Blikni LED_BUILDIN 4x
         digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime LED_BUILDIN
-        delay(50);                // Pockej 50ms
+        delay(100);                // Pockej 100ms
         digitalWrite(LED_BUILTIN, LOW); // Zhasneme LED_BUILDIN
-        delay(50);                // Pockej 50ms
+        delay(100);                // Pockej 100ms
       }
       break;
     default:                      // Kdyz stav neznam (chybovy stav)
