@@ -53,12 +53,14 @@ void setup() {
   Serial.begin(9600);             // Nastav rychlost prenosu
   Serial.println(F("Valkys super RF Sklenik driver v1.0\n=================================\n"));  // Ukaz pri inicializici
 
-  // Nastav vystupy a vstupy
+  // Nastav vystupy
   pinMode(LED_BUILTIN, OUTPUT);   // Inicializace integrovane LED jako vystup
-  pinMode(PIN_BUTTON1, INPUT);    // Inicilazace tlacitka jako vstup
   pinMode(PIN_LED1, OUTPUT);      // Inicilazace LED1 jako vystup
-  pinMode(PIN_SWITCH1, INPUT);    // Inicilazace prepinace jako vstup
   pinMode(PIN_LED2, OUTPUT);      // Inicilazace LED2 jako vystup
+    
+  // Nastav vstupy
+  pinMode(PIN_BUTTON1, INPUT);    // Inicilazace tlacitka jako vstup
+  pinMode(PIN_SWITCH1, INPUT);    // Inicilazace prepinace jako vstup
   pinMode(PIN_PLOV1, INPUT);      // Inicializace dolniho plovakoveho senzoru - PIN_PLOV1
   pinMode(PIN_PLOV2, INPUT);      // Inicializace horniho plovakoveho senzoru - PIN_PLOV2
   RadioMessage(0);                // Defaultne posilame pokyn k vypnuti rele "RELAY_00!"
@@ -137,9 +139,9 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
       digitalWrite(PIN_LED1, LOW);  // Zhasni LED1
       digitalWrite(PIN_LED2, LOW);  // Zhasni LED2
       digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime LED_BUILDIN, ze odesla zprava
-      delay(100);                  // Pockej 50ms
+      delay(100);                  // Pockej 100ms
       digitalWrite(LED_BUILTIN, LOW); // Zhasneme LED_BUILDIN
-      delay(100);                  // Pockej 50ms
+      delay(100);                  // Pockej 100ms
       break;
     case 1:                       // Zprava "Relay_01"
       Serial.println(F("Relay possible to ON")); // Ukaz zpravu na seriovem portu
@@ -148,9 +150,9 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
       digitalWrite(PIN_LED2, LOW);  // Zhasni LED2
       for (int x = 0; x < 2; x++) { // Blikni LED_BUILDIN 2x
         digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime LED_BUILDIN
-        delay(100);                // Pockej 50ms
+        delay(100);                // Pockej 100ms
         digitalWrite(LED_BUILTIN, LOW); // Zhasneme LED_BUILDIN
-        delay(100);                // Pockej 50ms
+        delay(100);                // Pockej 100ms
       }
       break;
     case 2:                       // Zprava "Relay_02"
@@ -160,9 +162,9 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
       digitalWrite(PIN_LED2, LOW);  // Zhasni LED2
       for (int x = 0; x < 3; x++) { // Blikni LED_BUILDIN 3x
         digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime LED_BUILDIN
-        delay(100);                // Pockej 50ms
+        delay(100);                // Pockej 100ms
         digitalWrite(LED_BUILTIN, LOW); // Zhasneme LED_BUILDIN
-        delay(100);                // Pockej 50ms
+        delay(100);                // Pockej 100ms
       }
       break;
     case 3:                       // Zprava "Relay_03"
@@ -172,9 +174,9 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
       digitalWrite(PIN_LED2, LOW);  // Zhasni LED2
       for (int x = 0; x < 4; x++) { // Blikni LED_BUILDIN 4x
         digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime LED_BUILDIN
-        delay(100);                // Pockej 50ms
+        delay(100);                // Pockej 100ms
         digitalWrite(LED_BUILTIN, LOW); // Zhasneme LED_BUILDIN
-        delay(100);                // Pockej 50ms
+        delay(100);                // Pockej 100ms
       }
       break;
     case 4:                       // Zprava "Relay_04"
@@ -184,9 +186,9 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
       digitalWrite(PIN_LED2, HIGH); // Rozsvit LED2
       for (int x = 0; x < 5; x++) { // Blikni LED_BUILDIN 5x
         digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime LED_BUILDIN
-        delay(100);                // Pockej 50ms
+        delay(100);                // Pockej 100ms
         digitalWrite(LED_BUILTIN, LOW); // Zhasneme LED_BUILDIN
-        delay(100);                // Pockej 50ms
+        delay(100);                // Pockej 100ms
       }
       break;
     default:                      // Kdyz stav neznam (chybovy stav)
