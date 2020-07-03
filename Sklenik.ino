@@ -187,6 +187,6 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
       }
       break;
     default:                      // Kdyz stav neznam (chybovy stav)
-      return;                     // Tak ukonci smycy a zacni znovu     
+    return;                       // Tak ukonci smycy a zacni znovu     
   }
 }
