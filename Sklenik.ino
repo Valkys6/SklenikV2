@@ -10,7 +10,7 @@
  *    3) Ukaze aktualni hodinu pro podminku neposilani prikazu k zapnuti cerpadla v case nocniho klidu
  *    4) Vysle a ukaze jednu z nasledujicich zprav za techto podminek:
  *         a. "Relay_00!": Cerpadlo nemuze automaticky sepnout, pokud je NADRZ1 plna ((PIN_PLOV1 = LOW) && (PIN_PLOV2 = HIGH)); nebo pokud posila nize nespecifikovany stav
- *         b. "Relay_01!": Cerpadlo muze sepnout, pokud neni NADRZ1 plna ((PIN_PLOV1 = LOW) && (PIN_PLOV2 = LOW))
+ *         b. "Relay_01!": Cerpadlo je vypnute, ale muze sepnout, pokud neni NADRZ1 plna ((PIN_PLOV1 = LOW) && (PIN_PLOV2 = LOW))
  *         c. "Relay_02!": Tlacitko stiknuto (PIN_BUTTON1 = HIGH) + NADRZ1 neni plna ((PIN_PLOV1 = LOW) && (PIN_PLOV2 = LOW)), dokud neni NADRZ1 plna (PIN_PLOV2 = HIGH)
  *         d. "Relay_03!": NADRZ1 je prazdna ((PIN_PLOV1 = HIGH) && (PIN_PLOV2 = LOW)) a GMT cas je mezi 5:00 a 19:00  (-2 hodiny letniho casu), dokud neni NADRZ1 plna (PIN_PLOV2 = HIGH)
  *         e. "Relay_04!": Prepinac 1 sepnut (PIN_SWITCH1 = HIGH) dokud nebude opet v pozici LOW
@@ -25,7 +25,7 @@
  *         a. PIN_LED1 = HIGH: pokud je tlacitko 1 stisknuto (PIN_SWITCH2 = HIGH) + NADRZ1 neni plna ((PIN_PLOV1 = LOW) && (PIN_PLOV2 = LOW)), dokud neni NADRZ1 plna (PIN_PLOV2 = HIGH)
  *         b. PIN_LED2 = HIGH: pokud je prepinac 1 sepnut (PIN_SWITCH2 = HIGH)
  *  
- *    !!!Program se opakuje kazde 4 sekundy!!!
+ *    !!!Program se opakuje kazdych 5 sekund!!!
 */
  
 // Pouzite knihovny:
@@ -69,7 +69,7 @@ void setup() {
   if (!driver.init()) Serial.println("Radio driver init failed");  // Nastavení komunikace radioveho vysilace - pin 12 (urceno knihovnou)
   if (!rtc.begin()) {             // Nastaveni komunikace RTC modulu
     Serial.println("Couldn't find RTC");  // Pokud selze RTC modul, vysli error (baterie v modulu by mela vydrzet 8 let) 
-    while (1);                    // Kdyz je RTC modul ziv a zdrav, posila data
+    while (1);                    // Opakuj dokud se RTC znovu nenastavi (vymenit baterku)
   }
 }
 
@@ -127,15 +127,14 @@ void RTC(uint8_t mode) {          // Funkce RTC modulu
 
 void send_msg(const char* msg) {  // Funkce pro odeslani retezce  
   driver.send((uint8_t *)msg, strlen(msg)); // Posli to
-  driver.waitPacketSent();        // Cekej, az to bude cely venku                            
-  delay(4000);                    // Opakuj odeslani zpravy kazde 4s
+  driver.waitPacketSent();        // Cekej, az to bude cely venku
+  delay(5000);                    // Po odeslani zpravy pockej 5 sekund
 }
 
 void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port a ovladani LED vystupu (LED_BUILDIN, LED1, LED2)
   switch (mode) {                 // Prejdi na pripad, ktereho se to tyka
     case 0:                       // Zprava "Relay_00"
-      Serial.println(F("Relay OFF")); // Ukaz zpravu na seriovem portu
-      Serial.println();           // Pridej radek mezi jednotlivymi zpravami
+      Serial.println(F("Relay OFF\r \n")); // Ukaz zpravu na seriovem portu a pridej radek
       digitalWrite(PIN_LED1, LOW);  // Zhasni LED1
       digitalWrite(PIN_LED2, LOW);  // Zhasni LED2
       digitalWrite(LED_BUILTIN, HIGH);  // Rozsvitime LED_BUILDIN, ze odesla zprava
@@ -143,9 +142,8 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
       digitalWrite(LED_BUILTIN, LOW); // Zhasneme LED_BUILDIN
       delay(100);                  // Pockej 100ms
       break;
-    case 1:                       // Zprava "Relay_01"
-      Serial.println(F("Relay possible to ON")); // Ukaz zpravu na seriovem portu
-      Serial.println();           // Pridej radek mezi jednotlivymi zpravami
+    case 1:                        // Zprava "Relay_01"
+      Serial.println(F("Relay possible to ON\r \n")); // Ukaz zpravu na seriovem portu a pridej radek
       digitalWrite(PIN_LED1, LOW);  // Zhasni LED1
       digitalWrite(PIN_LED2, LOW);  // Zhasni LED2
       for (int x = 0; x < 2; x++) { // Blikni LED_BUILDIN 2x
@@ -155,9 +153,8 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
         delay(100);                // Pockej 100ms
       }
       break;
-    case 2:                       // Zprava "Relay_02"
-      Serial.println(F("Relay ON by BUTTON1")); // Ukaz zpravu na seriovem portu
-      Serial.println();           // Pridej radek mezi jednotlivymi zpravami
+    case 2:                        // Zprava "Relay_02"
+      Serial.println(F("Relay ON by BUTTON1\r \n")); // Ukaz zpravu na seriovem portu a pridej radek
       digitalWrite(PIN_LED1, HIGH); // Rozsvit LED1 dokud neprijde jina zprava
       digitalWrite(PIN_LED2, LOW);  // Zhasni LED2
       for (int x = 0; x < 3; x++) { // Blikni LED_BUILDIN 3x
@@ -167,9 +164,8 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
         delay(100);                // Pockej 100ms
       }
       break;
-    case 3:                       // Zprava "Relay_03"
-      Serial.println(F("Relay ON by PLOV1"));  // Ukaz zpravu na seriovem portu
-      Serial.println();           // Pridej radek mezi jednotlivymi zpravami
+    case 3:                        // Zprava "Relay_03"
+      Serial.println(F("Relay ON by PLOV1\r \n")); // Ukaz zpravu na seriovem portu a pridej radek
       digitalWrite(PIN_LED1, LOW);  // Zhasni LED1
       digitalWrite(PIN_LED2, LOW);  // Zhasni LED2
       for (int x = 0; x < 4; x++) { // Blikni LED_BUILDIN 4x
@@ -180,8 +176,7 @@ void RadioMessage(uint8_t mode) { // Funkce pro odeslani retezce na seriovy port
       }
       break;
     case 4:                       // Zprava "Relay_04"
-      Serial.println(F("Relay ON by SWITCH1"));  // Ukaz zpravu na seriovem portu
-      Serial.println();           // Pridej radek mezi jednotlivymi zpravami
+      Serial.println(F("Relay ON by SWITCH1\r \n")); // Ukaz zpravu na seriovem portu a pridej radek
       digitalWrite(PIN_LED1, LOW);  // Zhasni LED1
       digitalWrite(PIN_LED2, HIGH); // Rozsvit LED2
       for (int x = 0; x < 5; x++) { // Blikni LED_BUILDIN 5x
