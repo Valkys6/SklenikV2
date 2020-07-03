@@ -77,46 +77,46 @@ void loop() {
   buflen=sizeof(buf);             // Do promenny naperu velikost bufiku, to asi slouzi radio knihovne, aby nejela nekam za roh
   if (driver.recv(buf, &buflen)) {  // Pokud nam neco dorazilo po radiu, tak se tomu budeme venovat
     Serial.print(F("Message: ")); // Ukazeme
-    Serial.println((char*)buf);   // Co to vlastne dorazilo  
+    Serial.println((char*)buf);   // Co to vlastne dorazilo
     // Podminka pro "Relay_00!"
-    if (strcmp("Relay_00!",buf)==0) { // Cerpadlo nemuze automaticky sepnout, pokud je NADRZ1 plna
-        relay(0);                 // Vypneme cerpadlo
+    if (strstr(buf,"Relay_00!") == buf) { // Cerpadlo nemuze automaticky sepnout, pokud je NADRZ1 plna
+        relay(0);                 // Skocime na relay case 0
         reltim=0;                 // A casovadlo muzem zarazit
     }
     // Podminka pro "Relay_01!" + prepinac 2 nesepnut
-    else if ((strcmp("Relay_01!",buf)==0) && (digitalRead(PIN_PLOV3) == LOW) && (digitalRead(PIN_SWITCH2) == LOW)) { // Cerpadlo je vypnute, ale je pripraveno sepnout. Ceka, jestli bude prepinac 2 sepnut (PIN_SWITCH2 = HIGH). Pokud se stane, je cerpadlo sepnuto, dokud neobdrzi "Relay_00!", nebo dokud neni NADRZ2 prazdna (PIN_PLOV3 = LOW)
+    else if ((strstr(buf,"Relay_01!") == buf) && (digitalRead(PIN_PLOV3) == LOW) && (digitalRead(PIN_SWITCH2) == LOW)) { // Cerpadlo je vypnute, ale je pripraveno sepnout. Ceka, jestli bude prepinac 2 sepnut (PIN_SWITCH2 = HIGH). Pokud se stane, je cerpadlo sepnuto, dokud neobdrzi "Relay_00!", nebo dokud neni NADRZ2 prazdna (PIN_PLOV3 = LOW)
+      relay(1);                   // Skocime na relay case 1
       while (digitalRead(PIN_PLOV3) == LOW) {  // Opakuj, dokud neni NARDZ2 prazdna, nebo dokud je prepinac 2 sepnut (PIN_SWITCH2 = HIGH)
-        relay(1);                 // Je mozne zapnout cerpadlo
-        reltim=20;                // Nastavime casovadlo, aby rele v pripade neprijmuti zadne zpravy a nebo je voda z NADRZ2 vycerpana vyplo po 20 sekundach
       }
+      reltim=20;                // Nastavime casovadlo, aby rele v pripade neprijmuti zadne zpravy (a nebo je NADRZ2 vycerpana) vyplo po 20 sekundachch
     }
     // Podminka pro "Relay_01!" + prepinac 2 sepnut
-    else if ((strcmp("Relay_01!",buf)==0) && (digitalRead(PIN_PLOV3) == LOW) && (digitalRead(PIN_SWITCH2) == HIGH)) {  // Cerpadlo je vypnute, ale je pripraveno sepnout. Ceka, jestli bude prepinac 2 sepnut (PIN_SWITCH2 = HIGH). Pokud se stane, je cerpadlo sepnuto, dokud neobdrzi "Relay_00!", nebo dokud neni NADRZ2 prazdna (PIN_PLOV3 = LOW)
-      while ((digitalRead(PIN_PLOV3) == LOW) || (digitalRead(PIN_SWITCH2) == LOW)) { // Opakuj, dokud neni NARDZ2 prazdna, nebo dokud je prepinac 2 sepnut (PIN_SWITCH2 = HIGH)
-        relay(2);                 // Zapnene cerpadlo
-        reltim=20;                // Nastavime casovadlo, aby rele v pripade neprijmuti zadne zpravy (a nebo je NADRZ2 vycerpana) vyplo po 20 sekundach
+    else if ((strstr(buf,"Relay_01!") == buf) && (digitalRead(PIN_PLOV3) == LOW) && (digitalRead(PIN_SWITCH2) == HIGH)) {  // Cerpadlo je vypnute, ale je pripraveno sepnout. Ceka, jestli bude prepinac 2 sepnut (PIN_SWITCH2 = HIGH). Pokud se stane, je cerpadlo sepnuto, dokud neobdrzi "Relay_00!", nebo dokud neni NADRZ2 prazdna (PIN_PLOV3 = LOW)
+      relay(2);                   // Skocime na relay case 2
+      while (digitalRead(PIN_PLOV3) == HIGH) { // Opakuj, dokud neni NARDZ2 prazdna, nebo dokud je prepinac 2 sepnut (PIN_SWITCH2 = HIGH)
       }
+      reltim=20;                // Nastavime casovadlo, aby rele v pripade neprijmuti zadne zpravy (a nebo je NADRZ2 vycerpana) vyplo po 20 sekundachch
     }
     // Podminka pro "Relay_02!"
-    else if ((strcmp("Relay_02!",buf) == 0) && (digitalRead(PIN_PLOV3) == LOW)) { // Pokud je to prikaz pro zapnuti a pokud neni NADRZ2 prazdna
-      while ((strcmp("Relay_02!",buf) == 0) || (digitalRead(PIN_PLOV3) == LOW)) { // Opakuj, dokud neprijde jina zprava nebo NADRZ2 neni prazdna
-        relay(3);                 // Zapneme cerpadlo
-        reltim=20;                // Nastavime casovadlo, aby rele v pripade neprijmuti zadne zpravy (a nebo je NADRZ2 vycerpana) vyplo po 20 sekundach
+    else if ((strstr(buf,"Relay_02!") == buf) && (digitalRead(PIN_PLOV3) == LOW)) { // Pokud je to prikaz pro zapnuti a pokud neni NADRZ2 prazdna
+      relay(3);                   // Skocime na relay case 3
+      while (digitalRead(PIN_PLOV3) == LOW) { // Opakuj, dokud neprijde jina zprava nebo NADRZ2 neni prazdna
       }
-    }  
+      reltim=20;                // Nastavime casovadlo, aby rele v pripade neprijmuti zadne zpravy (a nebo je NADRZ2 vycerpana) vyplo po 20 sekundachch
+    }
     // Podminka pro "Relay_03!"
-    else if ((strcmp("Relay_03!",buf) == 0) && (digitalRead(PIN_PLOV3) == LOW)) { // Pokud je to prikaz pro zapnuti a pokud neni NADRZ2 prazdna
-      while ((strcmp("Relay_03!",buf) == 0) || (digitalRead(PIN_PLOV3) == LOW)) { // Opakuj, dokud neprijde jina zprava nebo NADRZ2 neni prazdna
-        relay(4);                 // Zapneme cerpadlo
-        reltim=20;                // Nastavime casovadlo, aby rele v pripade neprijmuti zadne zpravy (a nebo je NADRZ2 vycerpana) vyplo po 20 sekundach
+    else if ((strstr(buf,"Relay_03!") == buf) && (digitalRead(PIN_PLOV3) == LOW)) { // Pokud je to prikaz pro zapnuti a pokud neni NADRZ2 prazdna
+      relay(4);                 // Skocime na relay case 4
+      while (digitalRead(PIN_PLOV3) == LOW) { // Opakuj, dokud neprijde jina zprava nebo NADRZ2 neni prazdna
       }
+    reltim=20;                // Nastavime casovadlo, aby rele v pripade neprijmuti zadne zpravy (a nebo je NADRZ2 vycerpana) vyplo po 20 sekundachch
     }
     // Podminka pro "Relay_04!"
-    else if ((strcmp("Relay_04!",buf) == 0) && (digitalRead(PIN_PLOV3) == LOW)) { // Pokud je to prikaz pro zapnuti a pokud neni NADRZ2 prazdna
-      while ((strcmp("Relay_04!",buf) == 0) || (digitalRead(PIN_PLOV3) == LOW)) { // Opakuj, dokud neprijde jina zprava nebo NADRZ2 neni prazdna
-        relay(5);                 // Zapneme cerpadlo
-        reltim=20;                // Nastavime casovadlo, aby rele v pripade neprijmuti zadne zpravy (a nebo je NADRZ2 vycerpana) vyplo po 20 sekundachch
+    else if ((strstr(buf,"Relay_04!") == buf) && (digitalRead(PIN_PLOV3) == LOW)) { // Pokud je to prikaz pro zapnuti a pokud neni NADRZ2 prazdna
+      relay(5);                 // Skocime na relay case 5
+      while (digitalRead(PIN_PLOV3) == LOW) { // Opakuj, dokud neprijde jina zprava nebo NADRZ2 neni prazdna
       }
+      reltim=20;                // Nastavime casovadlo, aby rele v pripade neprijmuti zadne zpravy (a nebo je NADRZ2 vycerpana) vyplo po 20 sekundachch
     }
     else {                        // Kdyz prijde nabourana nebo nedefinovana zprava
         Serial.println(F("Unknown command")); // Ukaz ze zpravu neznas
@@ -124,7 +124,7 @@ void loop() {
   }
 
   //casovadlo
-  delay(4000);                    // Cekame 4s, takze cely program pojede 1x za 4 sekundy 
+  delay(1000);                    // Cekame 1s, takze cely program pojede 1x za sekundu 
   digitalWrite(LED_BUILTIN, LOW); // Zhasneme ledku
   if (reltim!=0) {                // Pokud casovadlo jede, budeme casovat
     if ((--reltim)==0) {          // Cukneme a pokud to prave dojelo, 
@@ -201,7 +201,7 @@ void relay(uint8_t mode) {        // Funkce pro odeslani retezce na seriovy port
       break;
     case 5:                       // Zprava "Relay_04"
       Serial.println(F("Relay ON by SWITCH1")); // Ukaz zpravu na seriovem portu
-      Serial.println();           // Pridej radek mezi jednotlivymi zpravami
+      Serial.println(); 
       digitalWrite(PIN_LED3, LOW);  // Zhasni LED3
       digitalWrite(PIN_LED4, HIGH); // Rozsvit LED4 dokud neprijde jina zprava
       digitalWrite(PIN_RELAY, HIGH);  // Zapni cerpadlo
@@ -213,6 +213,6 @@ void relay(uint8_t mode) {        // Funkce pro odeslani retezce na seriovy port
       }
       break;
     default:                      // Kdyz stav neznam (chybovy stav)
-      return;                     // Tak ukonci smycy a zacni znovu 
+      return;                     // Tak ukonci smycy a zacni znovu
   }
 }
